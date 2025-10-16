@@ -821,18 +821,41 @@ function loadActivities() {
   function activityCard(act) {
     const isFav = userFavs.includes(act.id);
     const card = document.createElement('div');
-    card.className = `p-3 rounded-xl bg-gray-900 border ${isFav ? 'border-green-500' : 'border-gray-800'} shadow-sm flex justify-between items-center`;
+    // Make whole card clickable and keyboard-accessible
+    card.className = `p-3 rounded-xl bg-gray-900 border ${isFav ? 'border-green-500' : 'border-gray-800'} shadow-sm flex justify-between items-center cursor-pointer`;
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `${act.name} — toggle favorite`);
+
     // Show only core attribute names on each card (avoid displaying sub-attributes or many tag chips)
     const coreAttrs = Object.keys(act.attributes || {});
     const tagsText = coreAttrs.join(', ');
 
     card.innerHTML = `
-      <div>
+      <div class="flex-1">
         <p class="text-gray-200 font-medium">${act.name}</p>
         <p class="text-xs text-gray-400">${tagsText}</p>
       </div>
-      <button data-activity-id="${act.id}" class="text-sm ${isFav ? 'text-green-400' : 'text-gray-500'} hover:text-green-400">${isFav ? '★' : '☆'}</button>
+      <button data-activity-id="${act.id}" aria-pressed="${isFav ? 'true' : 'false'}" aria-label="Favorite ${act.name}" class="star-btn text-sm ${isFav ? 'text-green-400' : 'text-gray-500'} hover:text-green-400">${isFav ? '★' : '☆'}</button>
     `;
+
+    // When clicking the card (but not the inner star button), simulate a star click to reuse the existing delegated handler
+    card.addEventListener('click', (e) => {
+      // if the actual click target was the star button (or inside it), let the button handler run
+      if (e.target.closest && e.target.closest('button[data-activity-id]')) return;
+      const btn = card.querySelector('button[data-activity-id]');
+      if (btn) btn.click();
+    });
+
+    // Keyboard support: Enter or Space toggles favorite
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const btn = card.querySelector('button[data-activity-id]');
+        if (btn) btn.click();
+      }
+    });
+
     return card;
   }
 
