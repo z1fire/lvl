@@ -846,6 +846,20 @@ function loadActivities() {
       toggleFavorite(act.id);
     });
 
+    // Pointer/touch handlers for mobile reliability
+    const pointerHandler = (e) => {
+      try {
+        // ignore if originated from star button
+        if (e.target && e.target.closest && e.target.closest('button[data-activity-id]')) return;
+        // Only act for primary pointers/touches
+        if (e.type === 'pointerup' && e.pointerType && e.pointerType !== 'mouse') {
+          toggleFavorite(act.id);
+        }
+      } catch (err) { /* ignore */ }
+    };
+    card.addEventListener('pointerup', pointerHandler);
+    card.addEventListener('touchend', (e) => { /* fallback for older browsers */ pointerHandler(e); });
+
     // Keyboard support: Enter or Space toggles favorite
     card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
