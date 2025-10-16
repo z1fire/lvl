@@ -839,12 +839,11 @@ function loadActivities() {
       <button data-activity-id="${act.id}" aria-pressed="${isFav ? 'true' : 'false'}" aria-label="Favorite ${act.name}" class="star-btn text-sm ${isFav ? 'text-green-400' : 'text-gray-500'} hover:text-green-400">${isFav ? '★' : '☆'}</button>
     `;
 
-    // When clicking the card (but not the inner star button), simulate a star click to reuse the existing delegated handler
+    // When clicking the card (but not the inner star button), directly toggle favorite using helper
     card.addEventListener('click', (e) => {
       // if the actual click target was the star button (or inside it), let the button handler run
       if (e.target.closest && e.target.closest('button[data-activity-id]')) return;
-      const btn = card.querySelector('button[data-activity-id]');
-      if (btn) btn.click();
+      toggleFavorite(act.id);
     });
 
     // Keyboard support: Enter or Space toggles favorite
@@ -881,9 +880,9 @@ function loadActivities() {
   }
 
   // Favorite toggle handling delegated
-  list.addEventListener('click', (e) => {
-    if (e.target.matches('button[data-activity-id]')) {
-      const id = e.target.dataset.activityId;
+  // Toggle helper: centralize logic so both card clicks and star clicks behave the same on all devices
+  function toggleFavorite(id) {
+    try{
       const wasFav = userFavs.includes(id);
       if (wasFav) Storage.removeCustomActivity(id);
       else Storage.addCustomActivity(id);
@@ -897,6 +896,14 @@ function loadActivities() {
         const name = act ? act.name : id;
         announceForA11y(`${name} ${wasFav ? 'removed from favorites' : 'added to favorites'}`);
       }catch(e){}
+    }catch(e){ console.error('toggleFavorite error', e); }
+  }
+
+  // Favorite toggle handling delegated (star button still supported)
+  list.addEventListener('click', (e) => {
+    if (e.target.matches('button[data-activity-id]')) {
+      const id = e.target.dataset.activityId;
+      toggleFavorite(id);
     }
   });
 
