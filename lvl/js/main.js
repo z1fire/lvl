@@ -884,12 +884,19 @@ function loadActivities() {
   list.addEventListener('click', (e) => {
     if (e.target.matches('button[data-activity-id]')) {
       const id = e.target.dataset.activityId;
-      if (userFavs.includes(id)) Storage.removeCustomActivity(id);
+      const wasFav = userFavs.includes(id);
+      if (wasFav) Storage.removeCustomActivity(id);
       else Storage.addCustomActivity(id);
       // refresh favorites cache and re-render current page
       const updatedFavs = Storage.getCustomActivities();
       userFavs.splice(0, userFavs.length, ...updatedFavs);
       doSearch();
+      // announce for screen readers
+      try{
+        const act = cache.activities.find(a=>a.id===id);
+        const name = act ? act.name : id;
+        announceForA11y(`${name} ${wasFav ? 'removed from favorites' : 'added to favorites'}`);
+      }catch(e){}
     }
   });
 
@@ -1063,3 +1070,24 @@ function showToast(msg) {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 2500);
 }
+
+  // ARIA live region for screen-reader announcements
+  function ensureLiveRegion() {
+    if (document.getElementById('a11yLiveRegion')) return document.getElementById('a11yLiveRegion');
+    const r = document.createElement('div');
+    r.id = 'a11yLiveRegion';
+    r.setAttribute('aria-live', 'polite');
+    r.setAttribute('aria-atomic', 'true');
+    r.className = 'sr-only';
+    document.body.appendChild(r);
+    return r;
+  }
+
+  function announceForA11y(text) {
+    try{
+      const r = ensureLiveRegion();
+      r.textContent = '';
+      // small timeout to ensure assistive tech notices changes
+      setTimeout(() => { r.textContent = text; }, 50);
+    }catch(e){}
+  }
