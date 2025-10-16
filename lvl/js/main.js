@@ -441,8 +441,8 @@ function loadDashboardData() {
 
   try { localStorage.setItem(LAST_LEVELS_KEY, JSON.stringify(lastLevels)); } catch (e) { /* ignore */ }
 }
-// try to show any recent decay deltas
-renderDashboardDeltasFromLatestNotif();
+// try to show any recent decay deltas (guarded in case an older cached bundle lacks the function)
+try { if (typeof renderDashboardDeltasFromLatestNotif === 'function') renderDashboardDeltasFromLatestNotif(); } catch(e) { /* ignore */ }
 
 function animateXPBar(element, targetWidth) {
   const currentWidth = parseFloat(element.style.width) || 0;
