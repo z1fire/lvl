@@ -526,9 +526,11 @@ function loadDashboardData() {
 
   const nameEl = document.querySelector("[data-user-name]");
   const totalXP = document.querySelector("[data-total-xp]");
+  const overallEl = document.querySelector('[data-overall-level]');
   const streakEl = document.querySelector("[data-streak]");
   if (nameEl) nameEl.textContent = user.name;
   if (totalXP) totalXP.textContent = `${user.totalXP.toLocaleString()} XP`;
+  try{ if (overallEl && window.Storage && typeof Storage.getOverallLevel === 'function') overallEl.textContent = `Overall Lv ${Storage.getOverallLevel(user.totalXP)}`; }catch(e){}
   if (streakEl) streakEl.textContent = `🔥 ${user.streak}-day streak`;
 
   wireSubAttributeToggles();
