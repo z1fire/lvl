@@ -1,40 +1,24 @@
-name: Deploy site to GitHub Pages
+name: Deploy site to GitHub Pages (gh-pages branch)
 
 on:
   push:
     branches: [ main ]
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  build-and-upload:
+  deploy:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-path: public
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Copy site files to public/
+      - name: Prepare public directory
         run: |
           rm -rf public || true
           mkdir -p public
           cp -R lvl/* public/
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: public
-
-  deploy:
-    needs: build-and-upload
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    steps:
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
