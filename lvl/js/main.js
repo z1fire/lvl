@@ -1,6 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Level Up Life started!");
 
+  // PWA install prompt handling
+  let deferredPrompt = null;
+  const installBtn = document.getElementById('installPWA');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBtn) { installBtn.classList.remove('hidden'); installBtn.addEventListener('click', async () => {
+      try{ deferredPrompt.prompt(); const choice = await deferredPrompt.userChoice; if (choice && choice.outcome === 'accepted') { showToast('App installed'); } deferredPrompt = null; installBtn.classList.add('hidden'); }catch(e){}
+    }); }
+  });
+
   // Notifications helpers (top-level so other handlers can call them)
   function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function updateNotifCount(){
