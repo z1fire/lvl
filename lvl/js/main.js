@@ -1091,3 +1091,31 @@ function showToast(msg) {
       setTimeout(() => { r.textContent = text; }, 50);
     }catch(e){}
   }
+
+  // Development helper: when running on localhost, show a small update button
+  try{
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      const devBtn = document.createElement('button');
+      devBtn.id = 'forceReloadBtn';
+      devBtn.textContent = 'Update assets (dev)';
+      devBtn.className = 'fixed top-4 right-4 z-60 bg-yellow-500 text-black px-3 py-1 rounded';
+      devBtn.style.fontSize = '12px';
+      devBtn.title = 'Unregister service worker, clear caches and reload (dev only)';
+      devBtn.addEventListener('click', async () => {
+        showToast('Clearing service worker and caches...');
+        try{
+          if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r => r.unregister().catch(()=>{})));
+          }
+          if (window.caches && caches.keys) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => caches.delete(k)));
+          }
+        }catch(e){ console.error('dev clear error', e); }
+        setTimeout(()=> location.reload(), 200);
+      });
+      document.body.appendChild(devBtn);
+    }
+  }catch(e){}
