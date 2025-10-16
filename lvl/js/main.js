@@ -239,6 +239,50 @@ document.body.addEventListener('htmx:afterSwap', () => {
   }
 });
 
+  // Register service worker for offline caching
+  try {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/lvl/sw.js').then(reg => {
+        console.log('Service worker registered', reg.scope);
+
+        // If there's an already waiting worker, tell it to activate
+        if (reg.waiting) {
+          try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch(e){}
+        }
+
+        // Listen for updates found (new SW installing)
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed') {
+              // If there's a controller, then this is an update. Ask it to skip waiting.
+              if (navigator.serviceWorker.controller) {
+                try { newWorker.postMessage({ type: 'SKIP_WAITING' }); } catch(e){}
+              }
+            }
+          });
+        });
+      }).catch(err => console.warn('SW register failed', err));
+
+      // When the active service worker controlling this page changes, reload
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        console.log('New service worker activated, reloading page to load updated assets.');
+        window.location.reload();
+      });
+    }
+  } catch(e) {}
+
+  // Delegated reset handler: catch clicks on reset button even if partial content reloaded
+  document.body.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('#resetProgressBtn');
+    if (!btn) return;
+    if (confirm('Reset all XP and progress? This cannot be undone.')) Storage.reset();
+  });
+
   if (document.querySelector("[data-user-name]")) {
     loadDashboardData();
     wireActivityButton();
