@@ -131,6 +131,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // Cache-busting for reflections partial: ensure we fetch latest partial from network
+  document.body.addEventListener('click', (e) => {
+    try {
+      const btn = e.target.closest && e.target.closest('.nav-btn');
+      if (!btn) return;
+      const hx = btn.getAttribute && btn.getAttribute('hx-get');
+      if (!hx) return;
+      if (hx.indexOf('reflections.html') !== -1) {
+        // append timestamp to force network fetch (bypass cached entries)
+        const sep = hx.indexOf('?') === -1 ? '?' : '&';
+        btn.setAttribute('hx-get', hx + sep + 'cb=' + Date.now());
+      }
+    } catch (e) { /* ignore */ }
+  }, true);
+
   document.body.addEventListener("htmx:afterSwap", () => {
     const app = document.getElementById("app");
     app.classList.add("translate-x-0");
