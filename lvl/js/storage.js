@@ -326,16 +326,11 @@ Storage.applyDecay = function(missedDays = 1, percentPerDay = 5) {
 
 window.Storage = Storage;
 
-// Compute overall level from totalXP. Uses cumulative thresholds where level n requires 200*n XP to reach next level.
+// Compute overall level from totalXP using a linear scale: each overall level requires 1000 XP.
+// Level 1: 0-999 XP, Level 2: 1000-1999 XP, etc.
 Storage.getOverallLevel = function(totalXP){
-  const xp = Number(totalXP || 0);
-  if (xp <= 0) return 1;
-  // total thresholds up to level L: 200 * sum_{k=1}^{L-1} k = 200 * (L-1)*L/2
-  // We need to find largest L such that totalThresholds(L) <= xp
-  function totalThresholds(level){ return 200 * ((level - 1) * level / 2); }
-  let L = 1;
-  while (totalThresholds(L + 1) <= xp) L++;
-  return L;
+  const xp = Math.max(0, Number(totalXP || 0));
+  return Math.floor(xp / 1000) + 1;
 };
 
 // Reflections persistence (simple localStorage-backed list)
