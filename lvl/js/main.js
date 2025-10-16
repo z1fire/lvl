@@ -239,6 +239,78 @@ document.body.addEventListener('htmx:afterSwap', () => {
   }
 });
 
+// Reflections: render and wire when partial present
+function renderReflections(){
+  try{
+    const listEl = document.getElementById('reflectionsList');
+    if(!listEl) return;
+    const items = Storage.getReflections();
+    if(!items || items.length===0){ listEl.innerHTML = '<div class="text-gray-400">No reflections yet. Write one above to start.</div>'; return; }
+    listEl.innerHTML = '';
+    items.forEach(it => {
+      const card = document.createElement('div');
+      card.className = 'p-3 bg-gray-900 rounded-lg border border-gray-800 flex flex-col gap-2 reflection-card';
+      card.dataset.id = it.id;
+      const t = document.createElement('div'); t.className='text-gray-100'; t.textContent = it.text;
+      const meta = document.createElement('div'); meta.className='flex items-center justify-between text-xs text-gray-400';
+      const tags = document.createElement('div'); tags.className='flex gap-2';
+      (it.tags||[]).slice(0,5).forEach(tag => { const s = document.createElement('span'); s.className='inline-block px-2 py-0.5 text-xs rounded-full bg-gray-800 text-gray-300'; s.textContent = tag; tags.appendChild(s); });
+      const right = document.createElement('div');
+      const ts = new Date(it.ts || Date.now());
+      right.textContent = ts.toLocaleString();
+      meta.appendChild(tags); meta.appendChild(right);
+      const del = document.createElement('button'); del.className='text-xs text-red-400 hover:text-red-600 self-end delete-reflection'; del.textContent='Delete';
+      del.dataset.id = it.id;
+      card.appendChild(t); card.appendChild(meta); card.appendChild(del);
+      listEl.appendChild(card);
+    });
+  }catch(e){ console.error('renderReflections', e); }
+}
+// expose globally for callers that run outside DOMContentLoaded handlers
+try { window.renderDashboardDeltasFromLatestNotif = renderDashboardDeltasFromLatestNotif; } catch(e){}
+
+// Wire reflection form when partial swaps include it
+document.body.addEventListener('htmx:afterSwap', () => {
+  const form = document.getElementById('reflectionForm');
+  if (!form) return;
+  // avoid double-wiring
+  if (form.dataset.wired) { renderReflections(); return; }
+  const textIn = document.getElementById('reflectionText');
+  const tagsIn = document.getElementById('reflectionTags');
+  const addBtn = document.getElementById('addReflectionBtn');
+
+  addBtn.addEventListener('click', () => {
+    const txt = (textIn.value || '').trim();
+    if (!txt) { showToast('Reflection cannot be blank'); return; }
+    const tags = (tagsIn.value || '').split(',').map(s=>s.trim()).filter(Boolean);
+    const added = Storage.addReflection(txt, tags);
+    // clear inputs and re-render
+    textIn.value = '';
+    tagsIn.value = '';
+    renderReflections();
+    showToast('Reflection saved');
+    // simple pulse on reflections nav if present
+    const nav = document.querySelector(".nav-btn[data-page='reflections']");
+    if (nav) { nav.classList.add('bell-pulse'); setTimeout(()=>nav.classList.remove('bell-pulse'),800); }
+  });
+
+  // delegated delete handler inside reflections list
+  const listEl = document.getElementById('reflectionsList');
+  listEl.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('.delete-reflection');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (!id) return;
+    if (!confirm('Delete this reflection?')) return;
+    Storage.removeReflection(id);
+    renderReflections();
+    showToast('Reflection deleted');
+  });
+
+  form.dataset.wired = 'true';
+  renderReflections();
+});
+
   // Register service worker for offline caching
   try {
     if ('serviceWorker' in navigator) {

@@ -1,13 +1,14 @@
 // Simple service worker for offline caching of static assets
 const CACHE_NAME = 'lvl-static-v1';
+// Use relative paths so the SW scope (e.g. /lvl/) resolves correctly on GitHub Pages
 const ASSETS = [
-  '/',
-  'index.html',
-  'css/theme.css',
-  'js/main.js',
-  'js/storage.js',
-  'js/notifications.js',
-  'data/activities.json'
+  './',
+  './index.html',
+  './css/theme.css',
+  './js/main.js',
+  './js/storage.js',
+  './js/notifications.js',
+  './data/activities.json'
 ];
 
 self.addEventListener('install', (event) => {
