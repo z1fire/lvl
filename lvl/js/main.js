@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
+    try { window.deferredPrompt = e; } catch(err) {}
+    console.log('beforeinstallprompt event fired', e);
     if (installBtn) { installBtn.classList.remove('hidden'); installBtn.addEventListener('click', async () => {
       try{ deferredPrompt.prompt(); const choice = await deferredPrompt.userChoice; if (choice && choice.outcome === 'accepted') { showToast('App installed'); } deferredPrompt = null; installBtn.classList.add('hidden'); }catch(e){}
     }); }
