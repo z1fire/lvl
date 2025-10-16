@@ -13,11 +13,14 @@
 
   <!-- Theme -->
   <link rel="stylesheet" href="css/theme.css" />
+  <link rel="manifest" href="/lvl/manifest.json">
+  <meta name="theme-color" content="#16a34a">
 
   <!-- Main JS -->
    <script src="js/storage.js"></script>
   <script src="js/notifications.js"></script>
   <script defer src="js/main.js"></script>
+  <!-- Service worker registration will be handled inside main.js (registers /lvl/serviceworker.js) -->
 </head>
 
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">

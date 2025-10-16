@@ -403,27 +403,38 @@ document.body.addEventListener('htmx:afterSwap', () => {
   // Register service worker for offline caching
   try {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/lvl/sw.js').then(reg => {
+      navigator.serviceWorker.register('/lvl/serviceworker.js').then(reg => {
         console.log('Service worker registered', reg.scope);
 
-        // If there's an already waiting worker, tell it to activate
+        // If there's an already waiting worker, signal it to skip waiting (activate immediately)
         if (reg.waiting) {
           try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch(e){}
         }
 
-        // Listen for updates found (new SW installing)
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
           if (!newWorker) return;
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed') {
-              // If there's a controller, then this is an update. Ask it to skip waiting.
+              // New content is available; notify user and auto-activate
               if (navigator.serviceWorker.controller) {
                 try { newWorker.postMessage({ type: 'SKIP_WAITING' }); } catch(e){}
               }
             }
           });
         });
+
+        // Listen for messages from SW
+        navigator.serviceWorker.addEventListener('message', (ev) => {
+          try{
+            const data = ev.data || {};
+            if (data && data.type === 'SW_UPDATED') {
+              showToast('App updated in background — reloading to apply.');
+              setTimeout(()=> window.location.reload(), 800);
+            }
+          }catch(e){}
+        });
+
       }).catch(err => console.warn('SW register failed', err));
 
       // When the active service worker controlling this page changes, reload
@@ -534,6 +545,15 @@ function loadDashboardData() {
     if (overallEl && window.Storage && typeof Storage.computeOverallLevel === 'function'){
       const info = Storage.computeOverallLevel(user.totalXP, { baseXP: 1000, growth: 0.05 });
       overallEl.textContent = `Overall Lv ${info.level} — ${info.xpIntoLevel.toLocaleString()} / ${info.xpForNextLevel.toLocaleString()} XP`;
+      // progress bar
+      try{
+        const bar = document.getElementById('overallProgressBar');
+        if (bar) {
+          const pct = Math.min(100, Math.round((info.xpIntoLevel / info.xpForNextLevel) * 100));
+          // set width via style for animation
+          bar.style.width = pct + '%';
+        }
+      }catch(e){}
     } else if (overallEl && window.Storage && typeof Storage.getOverallLevel === 'function'){
       overallEl.textContent = `Overall Lv ${Storage.getOverallLevel(user.totalXP)}`;
     }

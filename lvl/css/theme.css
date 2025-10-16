@@ -144,3 +144,14 @@
   transform: scale(1.25);
   color: #4ade80;
 }
+
+/* Overall progress bar */
+#overallProgressBar {
+  width: 0%;
+  transition: width 0.8s cubic-bezier(.2,.8,.2,1);
+}
+
+.overall-level-text {
+  font-weight: 600;
+  color: #cbd5e1;
+}
