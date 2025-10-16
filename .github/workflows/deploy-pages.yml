@@ -25,7 +25,7 @@ jobs:
           cp -R lvl/* public/
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           path: public
 
