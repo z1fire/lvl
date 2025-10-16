@@ -413,15 +413,57 @@ document.body.addEventListener('htmx:afterSwap', () => {
   renderReflections();
 });
 
-  // Register service worker for offline caching
+  // Register service worker for offline caching and show a user-controlled update prompt
   try {
     if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('serviceworker.js').then(reg => {
+      // Keep a reference to the registration so the UI can call skipWaiting when user accepts
+      let swRegistration = null;
+      let userAcceptedUpdate = false;
+
+      function createUpdateBanner() {
+        // If banner already present, don't create again
+        if (document.getElementById('updateBanner')) return;
+        const banner = document.createElement('div');
+        banner.id = 'updateBanner';
+        banner.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-gray-100 px-4 py-3 rounded-lg shadow-lg z-60 flex items-center gap-3';
+        banner.innerHTML = `
+          <div class="flex-1 text-sm">A new version is available.</div>
+          <div class="flex gap-2">
+            <button id="updateNowBtn" class="px-3 py-1 rounded bg-green-600 text-white text-sm">Reload now</button>
+            <button id="updateLaterBtn" class="px-3 py-1 rounded bg-gray-700 text-sm">Later</button>
+          </div>
+        `;
+        document.body.appendChild(banner);
+
+        document.getElementById('updateLaterBtn').addEventListener('click', () => {
+          banner.remove();
+        });
+
+        document.getElementById('updateNowBtn').addEventListener('click', async () => {
+          try {
+            if (!swRegistration) return;
+            // If there's a waiting worker, ask it to skip waiting (activate)
+            if (swRegistration.waiting) {
+              userAcceptedUpdate = true;
+              try { swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch (e) { /* ignore */ }
+            } else {
+              // fallback: try to find an installing worker and ask it to skip
+              const installing = swRegistration.installing;
+              if (installing) try { installing.postMessage({ type: 'SKIP_WAITING' }); } catch (e) {}
+            }
+            // Give a small feedback toast; actual reload will happen on controllerchange
+            showToast('Applying update...');
+          } catch (e) { console.error('update now click error', e); }
+        });
+      }
+
+      navigator.serviceWorker.register('serviceworker.js').then(reg => {
+        swRegistration = reg;
         console.log('Service worker registered', reg.scope);
 
-        // If there's an already waiting worker, signal it to skip waiting (activate immediately)
+        // If there's already a waiting worker, show the update banner so the user can apply it
         if (reg.waiting) {
-          try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch(e){}
+          createUpdateBanner();
         }
 
         reg.addEventListener('updatefound', () => {
@@ -429,31 +471,32 @@ document.body.addEventListener('htmx:afterSwap', () => {
           if (!newWorker) return;
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed') {
-              // New content is available; notify user and auto-activate
+              // New content is available; if a controller exists (we're controlled), show the banner
               if (navigator.serviceWorker.controller) {
-                try { newWorker.postMessage({ type: 'SKIP_WAITING' }); } catch(e){}
+                createUpdateBanner();
               }
             }
           });
         });
 
-        // Listen for messages from SW
+        // Listen for messages from SW -- show banner instead of auto reload
         navigator.serviceWorker.addEventListener('message', (ev) => {
           try{
             const data = ev.data || {};
             if (data && data.type === 'SW_UPDATED') {
-              showToast('App updated in background — reloading to apply.');
-              setTimeout(()=> window.location.reload(), 800);
+              createUpdateBanner();
             }
           }catch(e){}
         });
 
       }).catch(err => console.warn('SW register failed', err));
 
-      // When the active service worker controlling this page changes, reload
+      // When the active service worker controlling this page changes, reload only if the user accepted the update
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (refreshing) return;
+        // Reload only when user triggered activation (avoid unexpected reloads)
+        if (!userAcceptedUpdate) return;
         refreshing = true;
         console.log('New service worker activated, reloading page to load updated assets.');
         window.location.reload();
