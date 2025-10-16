@@ -5,7 +5,7 @@ const Storage = {
 
   _defaultUser() {
     return {
-      name: "Zack",
+  name: "",
       level: 1,
       totalXP: 0,
       streak: 1,

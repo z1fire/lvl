@@ -783,6 +783,33 @@ document.body.addEventListener('htmx:afterSwap', () => {
     });
     resetBtn.dataset.wired = 'true';
   }
+
+  // Wire display name input if present
+  const displayInput = document.getElementById('displayNameInput');
+  const saveNameBtn = document.getElementById('saveDisplayNameBtn');
+  if (displayInput && !displayInput.dataset.wired) {
+    try{
+      const user = Storage.load();
+      displayInput.value = user.name || '';
+    }catch(e){ displayInput.value = ''; }
+    if (saveNameBtn) {
+      saveNameBtn.addEventListener('click', () => {
+        const val = (displayInput.value || '').trim();
+        try{
+          const u = Storage.load();
+          u.name = val;
+          Storage.save(u);
+          // update UI
+          const nameEl = document.querySelector('[data-user-name]');
+          if (nameEl) nameEl.textContent = val || '';
+          const initial = document.getElementById('userInitial');
+          if (initial) initial.textContent = (val && val.length>0) ? val.charAt(0).toUpperCase() : '?';
+          showToast('Display name saved');
+        }catch(e){ showToast('Unable to save name'); }
+      });
+    }
+    displayInput.dataset.wired = 'true';
+  }
 });
 
 // 🔥 Reset Shortcut
