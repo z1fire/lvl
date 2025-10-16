@@ -325,3 +325,31 @@ Storage.applyDecay = function(missedDays = 1, percentPerDay = 5) {
 };
 
 window.Storage = Storage;
+
+// Reflections persistence (simple localStorage-backed list)
+Storage.REF_KEY = 'lvl_reflections_v1';
+Storage._readReflections = function(){
+  try{ return JSON.parse(localStorage.getItem(this.REF_KEY) || '[]'); }catch(e){ return []; }
+};
+Storage._writeReflections = function(list){ try{ localStorage.setItem(this.REF_KEY, JSON.stringify(list)); }catch(e){} };
+
+Storage.getReflections = function(){
+  const list = this._readReflections() || [];
+  // return sorted by ts desc
+  return list.slice().sort((a,b)=> (b.ts||0) - (a.ts||0));
+};
+
+Storage.addReflection = function(text, tags){
+  const list = this._readReflections();
+  const item = { id: 'r_' + Date.now() + '_' + Math.floor(Math.random()*1000), text: String(text||''), tags: Array.isArray(tags)? tags : [], ts: Date.now() };
+  list.push(item);
+  this._writeReflections(list);
+  return item;
+};
+
+Storage.removeReflection = function(id){
+  const list = this._readReflections();
+  const filtered = list.filter(i => i.id !== id);
+  this._writeReflections(filtered);
+  return true;
+};
