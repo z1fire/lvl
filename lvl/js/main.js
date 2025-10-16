@@ -530,7 +530,14 @@ function loadDashboardData() {
   const streakEl = document.querySelector("[data-streak]");
   if (nameEl) nameEl.textContent = user.name;
   if (totalXP) totalXP.textContent = `${user.totalXP.toLocaleString()} XP`;
-  try{ if (overallEl && window.Storage && typeof Storage.getOverallLevel === 'function') overallEl.textContent = `Overall Lv ${Storage.getOverallLevel(user.totalXP)}`; }catch(e){}
+  try{
+    if (overallEl && window.Storage && typeof Storage.computeOverallLevel === 'function'){
+      const info = Storage.computeOverallLevel(user.totalXP, { baseXP: 1000, growth: 0.05 });
+      overallEl.textContent = `Overall Lv ${info.level} — ${info.xpIntoLevel.toLocaleString()} / ${info.xpForNextLevel.toLocaleString()} XP`;
+    } else if (overallEl && window.Storage && typeof Storage.getOverallLevel === 'function'){
+      overallEl.textContent = `Overall Lv ${Storage.getOverallLevel(user.totalXP)}`;
+    }
+  }catch(e){}
   if (streakEl) streakEl.textContent = `🔥 ${user.streak}-day streak`;
 
   wireSubAttributeToggles();

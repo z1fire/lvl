@@ -326,11 +326,35 @@ Storage.applyDecay = function(missedDays = 1, percentPerDay = 5) {
 
 window.Storage = Storage;
 
-// Compute overall level from totalXP using a linear scale: each overall level requires 1000 XP.
-// Level 1: 0-999 XP, Level 2: 1000-1999 XP, etc.
-Storage.getOverallLevel = function(totalXP){
+// Compute overall level from totalXP using a progressively harder scale.
+// Parameters:
+// - baseXP: XP required to go from level 1 -> 2 (default 1000)
+// - growth: fractional growth per level (default 0.05 = 5%)
+// computeOverallLevel returns an object: { level, xpIntoLevel, xpForNextLevel, totalXP }
+Storage.computeOverallLevel = function(totalXP, opts){
   const xp = Math.max(0, Number(totalXP || 0));
-  return Math.floor(xp / 1000) + 1;
+  const base = (opts && opts.baseXP) ? Number(opts.baseXP) : 1000;
+  const growth = (opts && typeof opts.growth === 'number') ? opts.growth : 0.05;
+
+  let remaining = xp;
+  let level = 1;
+  // iterate levels, subtracting the XP needed for each level-up until remaining < next requirement
+  while (true) {
+    const req = Math.round(base * Math.pow(1 + growth, level - 1));
+    if (remaining < req) {
+      return { level: level, xpIntoLevel: remaining, xpForNextLevel: req, totalXP: xp };
+    }
+    remaining -= req;
+    level += 1;
+    // safety cap to avoid infinite loop
+    if (level > 10000) break;
+  }
+  return { level: level, xpIntoLevel: remaining, xpForNextLevel: Math.round(base * Math.pow(1 + growth, level - 1)), totalXP: xp };
+};
+
+// Backwards-compatible helper that returns just the numeric level
+Storage.getOverallLevel = function(totalXP){
+  return Storage.computeOverallLevel(totalXP).level;
 };
 
 // Reflections persistence (simple localStorage-backed list)
