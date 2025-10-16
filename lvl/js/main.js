@@ -414,7 +414,7 @@ document.body.addEventListener('htmx:afterSwap', () => {
   // Register service worker for offline caching
   try {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/lvl/serviceworker.js').then(reg => {
+  navigator.serviceWorker.register('serviceworker.js').then(reg => {
         console.log('Service worker registered', reg.scope);
 
         // If there's an already waiting worker, signal it to skip waiting (activate immediately)
