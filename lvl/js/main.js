@@ -359,6 +359,11 @@ document.body.addEventListener('htmx:afterSwap', () => {
     loadDashboardData();
     wireActivityButton();
   }
+  // expose SW version in header for debugging
+  try {
+    const swEl = document.getElementById('swVersion');
+    if (swEl) { swEl.textContent = 'sw: lvl-static-v2'; swEl.classList.remove('hidden'); }
+  } catch(e) {}
   // notifications: update badge when notifications list changes
     try {
     window.addEventListener('lvl:notifs:update', () => {
