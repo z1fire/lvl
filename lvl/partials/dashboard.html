@@ -1,0 +1,121 @@
+<section class="flex flex-col space-y-6 pb-28"> <!-- added bottom padding -->
+
+  <!-- Profile Summary -->
+  <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-2xl shadow-lg">
+    <div class="flex items-center space-x-4">
+      <div class="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center text-2xl font-bold shadow-md">
+        Z
+      </div>
+      <div class="flex-1">
+        <h2 class="text-xl font-semibold" data-user-name>Zack</h2>
+        <p class="text-sm text-gray-400" data-total-xp>0 XP</p>
+        <p class="text-xs text-green-400 mt-1" data-streak>🔥 0-day streak</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attributes Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+    <!-- 🏋️ Fitness -->
+    <div class="bg-gray-900 p-4 rounded-2xl shadow-md relative transition-transform hover:scale-[1.02]" data-attr="fitness">
+      <div class="flex justify-between items-center cursor-pointer toggle-subattr">
+        <h3 class="font-semibold text-green-400">🏋️ Fitness</h3>
+        <p class="text-xs text-gray-400" data-level>Lv 0</p>
+      </div>
+      <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+        <div class="bg-green-500 h-2 rounded-full w-0 transition-all duration-300" data-xp-bar></div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2" data-xp-text>0 / 0 XP</p>
+
+      <div class="sub-attr hidden mt-3 space-y-1 pl-3 border-l border-gray-700">
+        <p class="text-xs text-gray-300">💪 Strength: <span data-sub="strength">0 XP</span></p>
+        <p class="text-xs text-gray-300">🏃 Stamina: <span data-sub="stamina">0 XP</span></p>
+        <p class="text-xs text-gray-300">🧘 Flexibility: <span data-sub="flexibility">0 XP</span></p>
+      </div>
+    </div>
+
+    <!-- 🧠 Knowledge -->
+    <div class="bg-gray-900 p-4 rounded-2xl shadow-md relative transition-transform hover:scale-[1.02]" data-attr="knowledge">
+      <div class="flex justify-between items-center cursor-pointer toggle-subattr">
+        <h3 class="font-semibold text-blue-400">🧠 Knowledge</h3>
+        <p class="text-xs text-gray-400" data-level>Lv 0</p>
+      </div>
+      <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+        <div class="bg-blue-500 h-2 rounded-full w-0 transition-all duration-300" data-xp-bar></div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2" data-xp-text>0 / 0 XP</p>
+
+      <div class="sub-attr hidden mt-3 space-y-1 pl-3 border-l border-gray-700">
+        <p class="text-xs text-gray-300">📘 Learning: <span data-sub="learning">0 XP</span></p>
+        <p class="text-xs text-gray-300">🔬 Research: <span data-sub="research">0 XP</span></p>
+        <p class="text-xs text-gray-300">⚙️ Application: <span data-sub="application">0 XP</span></p>
+      </div>
+    </div>
+
+    <!-- 🦉 Wisdom -->
+    <div class="bg-gray-900 p-4 rounded-2xl shadow-md relative transition-transform hover:scale-[1.02]" data-attr="wisdom">
+      <div class="flex justify-between items-center cursor-pointer toggle-subattr">
+        <h3 class="font-semibold text-yellow-400">🦉 Wisdom</h3>
+        <p class="text-xs text-gray-400" data-level>Lv 0</p>
+      </div>
+      <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+        <div class="bg-yellow-400 h-2 rounded-full w-0 transition-all duration-300" data-xp-bar></div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2" data-xp-text>0 / 0 XP</p>
+
+      <div class="sub-attr hidden mt-3 space-y-1 pl-3 border-l border-gray-700">
+        <p class="text-xs text-gray-300">💭 Reflection: <span data-sub="reflection">0 XP</span></p>
+        <p class="text-xs text-gray-300">🧩 Integration: <span data-sub="integration">0 XP</span></p>
+        <p class="text-xs text-gray-300">🗣️ Teaching: <span data-sub="teaching">0 XP</span></p>
+      </div>
+    </div>
+
+    <!-- ⚙️ Discipline -->
+    <div class="bg-gray-900 p-4 rounded-2xl shadow-md relative transition-transform hover:scale-[1.02]" data-attr="discipline">
+      <div class="flex justify-between items-center cursor-pointer toggle-subattr">
+        <h3 class="font-semibold text-orange-400">⚙️ Discipline</h3>
+        <p class="text-xs text-gray-400" data-level>Lv 0</p>
+      </div>
+      <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+        <div class="bg-orange-400 h-2 rounded-full w-0 transition-all duration-300" data-xp-bar></div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2" data-xp-text>0 / 0 XP</p>
+
+      <div class="sub-attr hidden mt-3 space-y-1 pl-3 border-l border-gray-700">
+        <p class="text-xs text-gray-300">📅 Consistency: <span data-sub="consistency">0 XP</span></p>
+        <p class="text-xs text-gray-300">🧾 Organization: <span data-sub="organization">0 XP</span></p>
+        <p class="text-xs text-gray-300">🧱 Resilience: <span data-sub="resilience">0 XP</span></p>
+      </div>
+    </div>
+
+    <!-- 🧘 Mindfulness -->
+    <div class="bg-gray-900 p-4 rounded-2xl shadow-md relative transition-transform hover:scale-[1.02] sm:col-span-2" data-attr="mindfulness">
+      <div class="flex justify-between items-center cursor-pointer toggle-subattr">
+        <h3 class="font-semibold text-purple-400">🧘 Mindfulness</h3>
+        <p class="text-xs text-gray-400" data-level>Lv 0</p>
+      </div>
+      <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+        <div class="bg-purple-500 h-2 rounded-full w-0 transition-all duration-300" data-xp-bar></div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2" data-xp-text>0 / 0 XP</p>
+
+      <div class="sub-attr hidden mt-3 space-y-1 pl-3 border-l border-gray-700">
+        <p class="text-xs text-gray-300">🎯 Focus: <span data-sub="focus">0 XP</span></p>
+        <p class="text-xs text-gray-300">👁️ Awareness: <span data-sub="awareness">0 XP</span></p>
+        <p class="text-xs text-gray-300">🌿 Calm: <span data-sub="calm">0 XP</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions (moved up slightly) -->
+  <div class="fixed bottom-4 left-0 right-0 flex justify-center space-x-4 z-10">
+    <button id="logFitness" class="bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg active:scale-95 transition-transform">
+      + Log Activity
+    </button>
+    <button id="reflectBtn" class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg active:scale-95 transition-transform">
+      📝 Reflect
+    </button>
+  </div>
+
+</section>

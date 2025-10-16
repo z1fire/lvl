@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level Up Life</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.11"></script>
+
+  <!-- Theme -->
+  <link rel="stylesheet" href="css/theme.css" />
+
+  <!-- Main JS -->
+   <script src="js/storage.js"></script>
+  <script src="js/notifications.js"></script>
+  <script defer src="js/main.js"></script>
+</head>
+
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="p-4 text-center border-b border-gray-800">
+    <div class="flex items-center justify-between max-w-3xl mx-auto">
+      <h1 class="text-xl font-semibold text-green-400">Level Up Life</h1>
+      <button id="notifBell" class="text-gray-300 hover:text-green-400" hx-get="partials/notifications.html" hx-target="#app" hx-swap="innerHTML" aria-label="Notifications">
+        🔔 <span id="notifCount" class="ml-1 text-xs bg-red-600 text-white rounded-full px-1 hidden">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main id="app"
+        class="flex-1 p-4 mb-16 transition-all duration-300 ease-in-out transform translate-x-0"
+        hx-get="partials/dashboard.html"
+        hx-trigger="load"
+        hx-target="#app"
+        hx-swap="innerHTML">
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 flex justify-around py-2 text-sm z-50">
+    <button class="nav-btn text-green-400"
+            hx-get="partials/dashboard.html"
+            hx-target="#app"
+            hx-swap="innerHTML">
+      🏠<br><span class="text-xs">Home</span>
+    </button>
+
+    <button class="nav-btn text-gray-400"
+            hx-get="partials/activities.html"
+            hx-target="#app"
+            hx-swap="innerHTML">
+      ➕<br><span class="text-xs">Log</span>
+    </button>
+
+    <button class="nav-btn text-gray-400"
+            hx-get="partials/reflections.html"
+            hx-target="#app"
+            hx-swap="innerHTML">
+      📝<br><span class="text-xs">Reflect</span>
+    </button>
+
+    <button class="nav-btn text-gray-400"
+            hx-get="partials/milestones.html"
+            hx-target="#app"
+            hx-swap="innerHTML">
+      🎯<br><span class="text-xs">Goals</span>
+    </button>
+
+    <button class="nav-btn text-gray-400"
+            hx-get="partials/settings.html"
+            hx-target="#app"
+            hx-swap="innerHTML">
+      ⚙️<br><span class="text-xs">Settings</span>
+    </button>
+  </nav>
+
+</body>
+</html>

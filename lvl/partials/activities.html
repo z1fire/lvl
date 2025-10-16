@@ -1,0 +1,24 @@
+<section class="p-5 space-y-4">
+  <h2 class="text-xl font-semibold text-green-400">Activities</h2>
+
+  <!-- Search -->
+  <input
+    id="activitySearch"
+    type="text"
+    placeholder="Search activities..."
+    class="w-full bg-gray-800 text-gray-100 p-2 rounded-lg focus:outline-none"
+  />
+  <div class="flex items-center gap-2 mt-2">
+    <button id="favoritesToggle" class="px-3 py-1 rounded-full bg-gray-800 text-gray-300 hover:bg-green-600 hover:text-white">★ Favorites</button>
+    <div class="text-xs text-gray-400">Toggle to view only your selected activities</div>
+  </div>
+
+  <!-- Category Filter -->
+  <div id="categoryFilters" class="flex flex-wrap gap-2 mt-3"></div>
+
+  <!-- Tag Filter -->
+  <div id="tagFilters" class="flex flex-wrap gap-2 mt-2"></div>
+
+  <!-- Activity List -->
+  <div id="activitiesList" class="space-y-3 mt-3"></div>
+</section>

@@ -1,0 +1,102 @@
+[
+  { "id": "workout", "name": "Workout", "category": "Fitness", "tags": ["Physical","Strength","Endurance"], "attributes": { "fitness": { "weight": 0.8, "sub": { "strength":0.5,"stamina":0.3,"flexibility":0.2 }}, "discipline": {"weight":0.2,"sub":{"consistency":0.6,"resilience":0.4}} } },
+  { "id": "run_interval", "name": "Run Intervals", "category": "Fitness", "tags": ["Cardio","Endurance"], "attributes": { "fitness": {"weight":0.85,"sub":{"stamina":0.6,"strength":0.2,"flexibility":0.2}}, "discipline": {"weight":0.15,"sub":{"consistency":0.7,"resilience":0.3}} } },
+  { "id": "yoga", "name": "Yoga Session", "category": "Fitness", "tags": ["Flexibility","Calm"], "attributes": { "fitness": {"weight":0.6,"sub":{"flexibility":0.6,"strength":0.2,"stamina":0.2}}, "mindfulness": {"weight":0.4,"sub":{"calm":0.5,"focus":0.3,"awareness":0.2}} } },
+  { "id": "swim", "name": "Swimming Laps", "category": "Fitness", "tags": ["Cardio","Full Body"], "attributes": { "fitness": {"weight":0.8,"sub":{"stamina":0.5,"strength":0.3,"flexibility":0.2}}, "mindfulness":{"weight":0.2,"sub":{"calm":0.6,"focus":0.4}} } },
+  { "id": "walk", "name": "Brisk Walk", "category": "Fitness", "tags": ["Low Impact","Cardio"], "attributes": { "fitness": {"weight":0.6,"sub":{"stamina":0.6,"flexibility":0.2,"strength":0.2}}, "mindfulness":{"weight":0.4,"sub":{"awareness":0.6,"calm":0.4}} } },
+  { "id": "strength_train", "name": "Strength Training", "category": "Fitness", "tags": ["Weights","Strength"], "attributes": { "fitness": {"weight":0.85,"sub":{"strength":0.7,"stamina":0.2,"flexibility":0.1}}, "discipline":{"weight":0.15,"sub":{"consistency":0.6,"resilience":0.4}} } },
+  { "id": "cycle", "name": "Cycling", "category": "Fitness", "tags": ["Cardio","Endurance"], "attributes": { "fitness": {"weight":0.75,"sub":{"stamina":0.6,"strength":0.2,"flexibility":0.2}}, "mindfulness":{"weight":0.25,"sub":{"focus":0.6,"awareness":0.4}} } },
+  { "id": "hike", "name": "Hiking", "category": "Fitness", "tags": ["Outdoors","Endurance"], "attributes": { "fitness": {"weight":0.7,"sub":{"stamina":0.6,"strength":0.3,"flexibility":0.1}}, "mindfulness":{"weight":0.3,"sub":{"awareness":0.7,"calm":0.3}} } },
+
+  { "id": "read_book", "name": "Read a Book", "category": "Knowledge", "tags": ["Learning","Focus","Quiet"], "attributes": { "knowledge": {"weight":0.6,"sub":{"learning":0.4,"research":0.4,"application":0.2}}, "wisdom":{"weight":0.4,"sub":{"reflection":0.5,"integration":0.3,"teaching":0.2}} } },
+  { "id": "online_course", "name": "Online Course", "category": "Knowledge", "tags": ["Learning","Research"], "attributes": { "knowledge": {"weight":0.7,"sub":{"learning":0.5,"application":0.3,"research":0.2}}, "discipline":{"weight":0.3,"sub":{"consistency":0.6,"organization":0.4}} } },
+  { "id": "watch_lecture", "name": "Watch Lecture", "category": "Knowledge", "tags": ["Learning","Focus"], "attributes": { "knowledge": {"weight":0.6,"sub":{"learning":0.5,"research":0.3,"application":0.2}}, "wisdom":{"weight":0.4,"sub":{"integration":0.6,"reflection":0.4}} } },
+  { "id": "coding_practice", "name": "Coding Practice", "category": "Knowledge", "tags": ["Application","Focus"], "attributes": { "knowledge": {"weight":0.7,"sub":{"application":0.6,"learning":0.3,"research":0.1}}, "discipline":{"weight":0.3,"sub":{"consistency":0.6,"organization":0.4}} } },
+  { "id": "language_learning", "name": "Language Practice", "category": "Knowledge", "tags": ["Learning","Focus"], "attributes": { "knowledge": {"weight":0.8,"sub":{"learning":0.7,"application":0.2,"research":0.1}}, "wisdom":{"weight":0.2,"sub":{"teaching":0.6,"integration":0.4}} } },
+  { "id": "research_paper", "name": "Research Paper", "category": "Knowledge", "tags": ["Research","Writing"], "attributes": { "knowledge": {"weight":0.7,"sub":{"research":0.6,"learning":0.2,"application":0.2}}, "wisdom":{"weight":0.3,"sub":{"integration":0.6,"reflection":0.4}} } },
+  { "id": "podcast_listen", "name": "Listen to Podcast", "category": "Knowledge", "tags": ["Learning","Audio"], "attributes": { "knowledge": {"weight":0.5,"sub":{"learning":0.4,"research":0.3,"application":0.3}}, "mindfulness":{"weight":0.5,"sub":{"awareness":0.6,"calm":0.4}} } },
+
+  { "id": "meditate", "name": "Meditate", "category": "Mindfulness", "tags": ["Calm","Awareness","Focus"], "attributes": { "mindfulness": {"weight":0.7,"sub":{"focus":0.4,"awareness":0.4,"calm":0.2}}, "wisdom":{"weight":0.3,"sub":{"reflection":0.5,"integration":0.5}} } },
+  { "id": "breathing", "name": "Breathing Exercise", "category": "Mindfulness", "tags": ["Calm","Focus"], "attributes": { "mindfulness": {"weight":0.8,"sub":{"calm":0.5,"focus":0.3,"awareness":0.2}}, "discipline":{"weight":0.2,"sub":{"consistency":0.7,"resilience":0.3}} } },
+  { "id": "body_scan", "name": "Body Scan", "category": "Mindfulness", "tags": ["Awareness","Calm"], "attributes": { "mindfulness": {"weight":0.75,"sub":{"awareness":0.6,"calm":0.4}}, "wisdom":{"weight":0.25,"sub":{"reflection":0.6,"integration":0.4}} } },
+  { "id": "gratitude", "name": "Gratitude Journal", "category": "Mindfulness", "tags": ["Writing","Reflection"], "attributes": { "mindfulness": {"weight":0.5,"sub":{"calm":0.4,"awareness":0.3,"focus":0.3}}, "wisdom":{"weight":0.5,"sub":{"reflection":0.8,"integration":0.2}} } },
+  { "id": "nature_walk", "name": "Nature Walk", "category": "Mindfulness", "tags": ["Outdoors","Awareness"], "attributes": { "mindfulness": {"weight":0.6,"sub":{"awareness":0.6,"calm":0.4}}, "fitness":{"weight":0.4,"sub":{"stamina":0.6,"flexibility":0.2,"strength":0.2}} } },
+
+  { "id": "plan_week", "name": "Weekly Planning", "category": "Discipline", "tags": ["Organization","Productivity"], "attributes": { "discipline": {"weight":0.8,"sub":{"organization":0.6,"consistency":0.3,"resilience":0.1}}, "knowledge":{"weight":0.2,"sub":{"application":0.6,"learning":0.4}} } },
+  { "id": "clean_inbox", "name": "Inbox Zero", "category": "Discipline", "tags": ["Organization","Productivity"], "attributes": { "discipline": {"weight":0.75,"sub":{"organization":0.6,"consistency":0.3,"resilience":0.1}}, "mindfulness":{"weight":0.25,"sub":{"calm":0.6,"focus":0.4}} } },
+  { "id": "declutter", "name": "Declutter Space", "category": "Discipline", "tags": ["Organization","Focus"], "attributes": { "discipline": {"weight":0.7,"sub":{"organization":0.6,"resilience":0.2,"consistency":0.2}}, "mindfulness":{"weight":0.3,"sub":{"calm":0.6,"focus":0.4}} } },
+  { "id": "habit_review", "name": "Habit Review", "category": "Discipline", "tags": ["Consistency","Reflection"], "attributes": { "discipline": {"weight":0.6,"sub":{"consistency":0.6,"resilience":0.4}}, "wisdom":{"weight":0.4,"sub":{"reflection":0.7,"integration":0.3}} } },
+  { "id": "pomodoro", "name": "Pomodoro Session", "category": "Discipline", "tags": ["Focus","Timeboxing"], "attributes": { "discipline": {"weight":0.6,"sub":{"consistency":0.5,"organization":0.3,"resilience":0.2}}, "knowledge":{"weight":0.4,"sub":{"application":0.6,"learning":0.4}} } },
+
+  { "id": "teach_someone", "name": "Teach Someone", "category": "Wisdom", "tags": ["Teaching","Social"], "attributes": { "wisdom": {"weight":0.7,"sub":{"teaching":0.6,"integration":0.4}}, "knowledge":{"weight":0.3,"sub":{"application":1.0}} } },
+  { "id": "journal_reflection", "name": "Journal Reflection", "category": "Wisdom", "tags": ["Reflection","Writing","Mindfulness"], "attributes": { "wisdom": {"weight":0.6,"sub":{"reflection":0.7,"integration":0.3}}, "mindfulness":{"weight":0.4,"sub":{"focus":0.5,"calm":0.5}} } },
+  { "id": "mentor_session", "name": "Mentor Session", "category": "Wisdom", "tags": ["Social","Teaching"], "attributes": { "wisdom": {"weight":0.65,"sub":{"teaching":0.5,"integration":0.3,"reflection":0.2}}, "knowledge":{"weight":0.35,"sub":{"application":0.6,"learning":0.4}} } },
+  { "id": "community_service", "name": "Community Service", "category": "Wisdom", "tags": ["Social","Teaching"], "attributes": { "wisdom": {"weight":0.6,"sub":{"teaching":0.4,"integration":0.4,"reflection":0.2}}, "discipline":{"weight":0.4,"sub":{"consistency":0.5,"resilience":0.5}} } },
+
+  { "id": "cook_meal", "name": "Cook a Meal", "category": "Discipline", "tags": ["Skill","Organization"], "attributes": { "discipline": {"weight":0.5,"sub":{"organization":0.5,"consistency":0.3,"resilience":0.2}}, "knowledge":{"weight":0.5,"sub":{"application":0.6,"learning":0.4}} } },
+  { "id": "garden", "name": "Gardening", "category": "Mindfulness", "tags": ["Outdoors","Calm"], "attributes": { "mindfulness": {"weight":0.6,"sub":{"calm":0.5,"awareness":0.5}}, "fitness":{"weight":0.4,"sub":{"strength":0.4,"stamina":0.4,"flexibility":0.2}} } },
+
+  { "id": "meditate_10", "name": "10-min Meditation", "category": "Mindfulness", "tags": ["Calm","Short"], "attributes": { "mindfulness": {"weight":0.8,"sub":{"focus":0.4,"calm":0.4,"awareness":0.2}}, "wisdom":{"weight":0.2,"sub":{"reflection":0.6,"integration":0.4}} } },
+  { "id": "stretch", "name": "Stretching Routine", "category": "Fitness", "tags": ["Flexibility","Warmup"], "attributes": { "fitness": {"weight":0.6,"sub":{"flexibility":0.7,"stamina":0.15,"strength":0.15}}, "mindfulness":{"weight":0.4,"sub":{"calm":0.5,"focus":0.3,"awareness":0.2}} } },
+
+  { "id": "brainstorm", "name": "Brainstorm Session", "category": "Knowledge", "tags": ["Creativity","Focus"], "attributes": { "knowledge": {"weight":0.6,"sub":{"research":0.4,"application":0.4,"learning":0.2}}, "wisdom":{"weight":0.4,"sub":{"integration":0.6,"reflection":0.4}} } },
+  { "id": "meetup", "name": "Attend Meetup", "category": "Wisdom", "tags": ["Social","Learning"], "attributes": { "wisdom": {"weight":0.5,"sub":{"teaching":0.3,"integration":0.4,"reflection":0.3}}, "knowledge":{"weight":0.5,"sub":{"learning":0.6,"application":0.4}} } },
+
+  { "id": "art_sketch", "name": "Sketching", "category": "Mindfulness", "tags": ["Creative","Calm"], "attributes": { "mindfulness": {"weight":0.6,"sub":{"calm":0.5,"focus":0.3,"awareness":0.2}}, "knowledge":{"weight":0.4,"sub":{"application":0.5,"learning":0.5}} } },
+  { "id": "music_practice", "name": "Music Practice", "category": "Knowledge", "tags": ["Skill","Focus"], "attributes": { "knowledge": {"weight":0.7,"sub":{"application":0.6,"learning":0.3,"research":0.1}}, "discipline":{"weight":0.3,"sub":{"consistency":0.7,"organization":0.3}} } },
+
+  { "id": "call_friend", "name": "Call a Friend", "category": "Wisdom", "tags": ["Social","Connection"], "attributes": { "wisdom": {"weight":0.5,"sub":{"teaching":0.2,"integration":0.3,"reflection":0.5}}, "mindfulness":{"weight":0.5,"sub":{"calm":0.6,"awareness":0.4}} } },
+
+  { "id": "write_blog", "name": "Write a Blog Post", "category": "Knowledge", "tags": ["Writing","Teaching"], "attributes": { "knowledge": {"weight":0.6,"sub":{"application":0.5,"learning":0.3,"research":0.2}}, "wisdom":{"weight":0.4,"sub":{"teaching":0.6,"integration":0.4}} } },
+
+  { "id": "learn_recipe", "name": "Learn a Recipe", "category": "Knowledge", "tags": ["Cooking","Application"], "attributes": { "knowledge": {"weight":0.6,"sub":{"learning":0.5,"application":0.5}}, "discipline":{"weight":0.4,"sub":{"organization":0.6,"consistency":0.4}} } },
+
+  { "id": "volunteer", "name": "Volunteer", "category": "Wisdom", "tags": ["Social","Service"], "attributes": { "wisdom": {"weight":0.6,"sub":{"integration":0.4,"teaching":0.3,"reflection":0.3}}, "discipline":{"weight":0.4,"sub":{"consistency":0.6,"resilience":0.4}} } },
+
+  { "id": "sprint_review", "name": "Sprint Review", "category": "Discipline", "tags": ["Productivity","Team"], "attributes": { "discipline": {"weight":0.6,"sub":{"organization":0.5,"consistency":0.3,"resilience":0.2}}, "knowledge":{"weight":0.4,"sub":{"application":0.6,"research":0.4}} } },
+
+  { "id": "sleep_hygiene", "name": "Sleep Hygiene Routine", "category": "Mindfulness", "tags": ["Health","Routine"], "attributes": { "mindfulness": {"weight":0.7,"sub":{"calm":0.6,"awareness":0.2,"focus":0.2}}, "discipline":{"weight":0.3,"sub":{"consistency":0.7,"organization":0.3}} } },
+
+  { "id": "bike_commute", "name": "Bike Commute", "category": "Fitness", "tags": ["Commute","Cardio"], "attributes": { "fitness": {"weight":0.7,"sub":{"stamina":0.6,"strength":0.2,"flexibility":0.2}}, "discipline":{"weight":0.3,"sub":{"consistency":0.6,"organization":0.4}} } },
+
+  { "id": "deep_work", "name": "Deep Work Block", "category": "Discipline", "tags": ["Focus","Productivity"], "attributes": { "discipline": {"weight":0.7,"sub":{"consistency":0.5,"organization":0.3,"resilience":0.2}}, "knowledge":{"weight":0.3,"sub":{"application":0.6,"learning":0.4}} } },
+
+  { "id": "swedish_deep_stretch", "name": "Deep Stretching", "category": "Fitness", "tags": ["Flexibility","Recovery"], "attributes": { "fitness": {"weight":0.7,"sub":{"flexibility":0.8,"stamina":0.1,"strength":0.1}}, "mindfulness":{"weight":0.3,"sub":{"calm":0.7,"focus":0.3}} } },
+
+  { "id": "read_poetry", "name": "Read Poetry", "category": "Wisdom", "tags": ["Reflection","Quiet"], "attributes": { "wisdom": {"weight":0.6,"sub":{"reflection":0.7,"integration":0.3}}, "mindfulness":{"weight":0.4,"sub":{"calm":0.6,"awareness":0.4}} } },
+
+  { "id": "learn_chess", "name": "Chess Practice", "category": "Knowledge", "tags": ["Strategy","Focus"], "attributes": { "knowledge": {"weight":0.7,"sub":{"learning":0.6,"application":0.4}}, "wisdom":{"weight":0.3,"sub":{"integration":0.5,"reflection":0.5}} } },
+
+  { "id": "public_speaking", "name": "Public Speaking Practice", "category": "Wisdom", "tags": ["Teaching","Social"], "attributes": { "wisdom": {"weight":0.7,"sub":{"teaching":0.6,"integration":0.3,"reflection":0.1}}, "discipline":{"weight":0.3,"sub":{"consistency":0.6,"resilience":0.4}} } },
+
+  { "id": "play_instrument", "name": "Play an Instrument", "category": "Knowledge", "tags": ["Creative","Skill"], "attributes": { "knowledge": {"weight":0.7,"sub":{"application":0.6,"learning":0.4}}, "mindfulness":{"weight":0.3,"sub":{"focus":0.6,"calm":0.4}} } },
+
+  { "id": "film_analysis", "name": "Film Analysis", "category": "Knowledge", "tags": ["Research","Reflection"], "attributes": { "knowledge": {"weight":0.6,"sub":{"research":0.5,"learning":0.3,"application":0.2}}, "wisdom":{"weight":0.4,"sub":{"integration":0.6,"reflection":0.4}} } },
+
+  { "id": "board_game", "name": "Board Game Night", "category": "Wisdom", "tags": ["Social","Fun"], "attributes": { "wisdom": {"weight":0.5,"sub":{"integration":0.4,"teaching":0.3,"reflection":0.3}}, "mindfulness":{"weight":0.5,"sub":{"calm":0.3,"awareness":0.4,"focus":0.3}} } },
+
+  { "id": "bike_trail", "name": "Trail Biking", "category": "Fitness", "tags": ["Outdoors","Skill"], "attributes": { "fitness": {"weight":0.8,"sub":{"stamina":0.5,"strength":0.3,"flexibility":0.2}}, "mindfulness":{"weight":0.2,"sub":{"awareness":0.6,"calm":0.4}} } },
+
+  { "id": "call_mum", "name": "Call Family", "category": "Wisdom", "tags": ["Social","Connection"], "attributes": { "wisdom": {"weight":0.6,"sub":{"reflection":0.4,"teaching":0.2,"integration":0.4}}, "mindfulness":{"weight":0.4,"sub":{"calm":0.6,"awareness":0.4}} } },
+
+  { "id": "watch_doc", "name": "Watch a Documentary", "category": "Knowledge", "tags": ["Learning","Research"], "attributes": { "knowledge": {"weight":0.6,"sub":{"learning":0.5,"research":0.3,"application":0.2}}, "wisdom":{"weight":0.4,"sub":{"integration":0.6,"reflection":0.4}} } },
+
+  { "id": "teach_kids", "name": "Teach Kids", "category": "Wisdom", "tags": ["Teaching","Social"], "attributes": { "wisdom": {"weight":0.7,"sub":{"teaching":0.7,"integration":0.2,"reflection":0.1}}, "knowledge":{"weight":0.3,"sub":{"application":1.0}} } },
+
+  { "id": "meal_prep", "name": "Meal Prep", "category": "Discipline", "tags": ["Organization","Health"], "attributes": { "discipline": {"weight":0.6,"sub":{"organization":0.6,"consistency":0.3,"resilience":0.1}}, "fitness":{"weight":0.4,"sub":{"stamina":0.5,"strength":0.2,"flexibility":0.3}} } },
+
+  { "id": "charity_run", "name": "Charity Run", "category": "Fitness", "tags": ["Event","Endurance"], "attributes": { "fitness": {"weight":0.8,"sub":{"stamina":0.6,"strength":0.2,"flexibility":0.2}}, "wisdom":{"weight":0.2,"sub":{"integration":0.6,"reflection":0.4}} } },
+
+  { "id": "code_review", "name": "Code Review", "category": "Knowledge", "tags": ["Focus","Team"], "attributes": { "knowledge": {"weight":0.6,"sub":{"research":0.4,"application":0.4,"learning":0.2}}, "discipline":{"weight":0.4,"sub":{"organization":0.6,"consistency":0.4}} } },
+
+  { "id": "learn_podcast", "name": "Create Podcast", "category": "Knowledge", "tags": ["Creation","Teaching"], "attributes": { "knowledge": {"weight":0.6,"sub":{"application":0.5,"learning":0.3,"research":0.2}}, "wisdom":{"weight":0.4,"sub":{"teaching":0.6,"integration":0.4}} } },
+
+  { "id": "quick_clean", "name": "10-min Tidy", "category": "Discipline", "tags": ["Quick","Organization"], "attributes": { "discipline": {"weight":0.7,"sub":{"organization":0.6,"consistency":0.3,"resilience":0.1}}, "mindfulness":{"weight":0.3,"sub":{"calm":0.6,"focus":0.4}} } },
+
+  { "id": "learn_math", "name": "Math Practice", "category": "Knowledge", "tags": ["Learning","Practice"], "attributes": { "knowledge": {"weight":0.8,"sub":{"learning":0.6,"application":0.3,"research":0.1}}, "discipline":{"weight":0.2,"sub":{"consistency":0.7,"organization":0.3}} } },
+
+  { "id": "dance", "name": "Dance Session", "category": "Fitness", "tags": ["Cardio","Fun"], "attributes": { "fitness": {"weight":0.7,"sub":{"stamina":0.5,"strength":0.3,"flexibility":0.2}}, "mindfulness":{"weight":0.3,"sub":{"calm":0.4,"focus":0.6}} } },
+
+  { "id": "call_old_friend", "name": "Reconnect Call", "category": "Wisdom", "tags": ["Social","Connection"], "attributes": { "wisdom": {"weight":0.6,"sub":{"reflection":0.5,"integration":0.3,"teaching":0.2}}, "mindfulness":{"weight":0.4,"sub":{"calm":0.6,"awareness":0.4}} } }
+
+]
