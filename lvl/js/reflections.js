@@ -51,8 +51,9 @@
   function wireForm() {
     try{
       const form = document.getElementById('reflectionForm');
-      // If the partial no longer contains a form (we turned it into a placeholder), still render any saved reflections
-      if (!form) { render(); return; }
+  // If the partial no longer contains a form (we turned it into a placeholder),
+  // still render any saved reflections and ensure the delete handlers are wired.
+  if (!form) { render(); wireListDelegation(); return; }
       if (form.dataset.wired) { render(); return; }
       const textIn = document.getElementById('reflectionText');
       const tagsIn = document.getElementById('reflectionTags');
