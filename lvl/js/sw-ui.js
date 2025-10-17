@@ -94,8 +94,10 @@
           const newWorker = reg.installing; if (!newWorker) return;
           newWorker.addEventListener('statechange', ()=>{ if (newWorker.state==='installed' && navigator.serviceWorker.controller) createUpdateBanner(); });
         });
+        // show a manual check button when debugging is enabled
+        try{ showManualUpdateButton(); }catch(e){}
   navigator.serviceWorker.addEventListener('message', (ev)=>{ try{ const data = ev.data||{}; if (data && data.type === 'SW_UPDATED') { createUpdateBanner(); } if (data && (data.type === 'SW_ACTIVATED' || data.type === 'SW_UPDATED')) { _toast('Update ready'); removeUpdateBanner(); } }catch(e){} });
-      }).catch(err=>console.warn('SW register failed', err));
+  }).catch(err=>console.warn('SW register failed', err));
 
       // quick deployed-version check: fetch sw-version.json (no-store) and compare to last seen
       try{
@@ -130,6 +132,33 @@
       }
 
     }catch(e){ console.error('SWUI.init error', e); }
+  }
+
+  // manual update check button to help debug mobile update issues
+  function showManualUpdateButton(){
+    try{
+      const params = new URLSearchParams(location.search);
+      const enabled = params.has('debug_sw') || localStorage.getItem('lvl_sw_debug') === '1';
+      if (!enabled) return;
+      if (document.getElementById('swCheckBtn')) return;
+      const btn = document.createElement('button');
+      btn.id = 'swCheckBtn';
+      btn.textContent = 'Check for updates';
+      btn.className = 'fixed top-14 right-4 z-60 bg-blue-600 text-white px-3 py-1 rounded';
+      btn.style.fontSize = '12px';
+      btn.addEventListener('click', async ()=>{
+        try{
+          if (!('serviceWorker' in navigator)) return _toast('No ServiceWorker');
+          _toast('Checking for updates...');
+          if (swRegistration && swRegistration.update) try{ await swRegistration.update(); }catch(e){}
+          try{ if (swRegistration && swRegistration.active && swRegistration.active.postMessage) swRegistration.active.postMessage({type:'CHECK_FOR_UPDATE'}); }catch(e){}
+          // fetch remote sw-version for info
+          try{ const res = await fetch('sw-version.json', {cache:'no-store'}); if (res && res.ok){ const data = await res.json(); const remote = data && data.cache; const local = localStorage.getItem('lvl_sw_version') || '(none)'; _toast('remote: ' + remote + ' local: ' + local); } }
+          catch(e){ /* ignore */ }
+        }catch(e){ console.error('manual update check failed', e); _toast('Update check failed'); }
+      });
+      document.body.appendChild(btn);
+    }catch(e){}
   }
 
   // Dev helper: create a small button when running on localhost to clear SW and caches
