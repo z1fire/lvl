@@ -99,9 +99,9 @@
   navigator.serviceWorker.addEventListener('message', (ev)=>{ try{ const data = ev.data||{}; if (data && data.type === 'SW_UPDATED') { createUpdateBanner(); } if (data && (data.type === 'SW_ACTIVATED' || data.type === 'SW_UPDATED')) { _toast('Update ready'); removeUpdateBanner(); } }catch(e){} });
   }).catch(err=>console.warn('SW register failed', err));
 
-      // quick deployed-version check: fetch sw-version.json (no-store) and compare to last seen
+      // quick deployed-version check: poll sw-version.json (no-store) and compare to last seen
       try{
-        (async function(){
+        async function checkRemoteVersion(){
           try{
             const res = await fetch('sw-version.json', {cache: 'no-store'});
             if (!res || !res.ok) return;
@@ -113,14 +113,28 @@
               // ask SW to check for updates and show banner
               try{ if (swRegistration && swRegistration.active && swRegistration.active.postMessage) swRegistration.active.postMessage({type:'CHECK_FOR_UPDATE'}); }catch(e){}
               try{ createUpdateBanner(); }catch(e){}
+              // For mobile devices, be more aggressive: auto-accept and request skipWaiting so users get the new UI without manual cache clearing
+              try{
+                if (isMobile && swRegistration) {
+                  userAcceptedUpdate = true;
+                  if (swRegistration.waiting) { try{ swRegistration.waiting.postMessage({type:'SKIP_WAITING'}); }catch(e){} }
+                  else if (swRegistration.installing) { try{ swRegistration.installing.postMessage({type:'SKIP_WAITING'}); }catch(e){} }
+                }
+              }catch(e){}
             }
           }catch(e){}
-        })();
+        }
+        // run immediately and then periodically (every 30 seconds)
+        checkRemoteVersion();
+        setInterval(checkRemoteVersion, 30000);
       }catch(e){}
 
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', ()=>{
-        if (refreshing) return; if (!userAcceptedUpdate) return; refreshing = true; try{ removeUpdateBanner(); }catch(e){} window.location.reload();
+        if (refreshing) return;
+        // On mobile we auto-accept updates; otherwise only reload after explicit accept
+        if (!userAcceptedUpdate && !isMobile) return;
+        refreshing = true; try{ removeUpdateBanner(); }catch(e){} window.location.reload();
       });
 
       function removeUpdateBanner(){
