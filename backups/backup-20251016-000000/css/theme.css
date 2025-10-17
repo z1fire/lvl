@@ -1,0 +1,106 @@
+@keyframes xpPulse {
+  0% { box-shadow: 0 0 0px rgba(34,197,94,0); }
+  50% { box-shadow: 0 0 12px rgba(34,197,94,0.6); }
+  100% { box-shadow: 0 0 0px rgba(34,197,94,0); }
+}
+
+.xp-flash {
+  animation: xpPulse 0.6s ease-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(10px); }
+  10%, 90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(10px); }
+}
+
+.animate-fadeInOut {
+  animation: fadeInOut 2.4s ease-in-out forwards;
+}
+
+/* ⭐ Level Up Badge Animation */
+@keyframes levelUpPop {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.05);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-15px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-25px) scale(0.9);
+  }
+}
+
+/* 🌟 Level-Up Card Pulse */
+@keyframes cardPulse {
+  0% {
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
+    transform: scale(1);
+  }
+  20% {
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+    transform: scale(1.02);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
+    transform: scale(1);
+  }
+}
+
+.level-up-pulse {
+  animation: cardPulse 1.8s ease-out;
+  border: 2px solid rgba(34, 197, 94, 0.7);
+  border-radius: 1rem;
+}
+
+.toggle-subattr:hover h3 {
+  color: #22c55e;
+  transition: color 0.2s ease;
+}
+
+.sub-attr {
+  transition: all 0.2s ease;
+}
+
+
+.level-up-badge {
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, #22c55e, #16a34a);
+  color: white;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+  animation: levelUpPop 1.8s ease-out forwards;
+  z-index: 20;
+  pointer-events: none;
+}
+
+
+.toggle-subattr:hover h3 {
+  color: #22c55e;
+  transition: color 0.2s ease;
+}
+
+#xpPreview {
+  transition: all 0.25s ease;
+}
+#xpPreview.changed {
+  transform: scale(1.25);
+  color: #4ade80;
+}

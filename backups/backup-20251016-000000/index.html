@@ -13,45 +13,17 @@
 
   <!-- Theme -->
   <link rel="stylesheet" href="css/theme.css" />
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#16a34a">
-  <!-- iOS / Apple meta tags for home-screen / standalone behavior -->
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <!-- Main JS -->
    <script src="js/storage.js"></script>
-  <script src="js/notifications.js"></script>
-  <script src="js/ui-utils.js"></script>
-  <script src="js/name-ui.js"></script>
-  <script src="js/activities.js"></script>
-  <script src="js/notifs-ui.js"></script>
-  <script src="js/activity-form.js"></script>
-  <script src="js/reflections.js"></script>
-  <script src="js/milestones.js"></script>
-  <script src="js/history.js"></script>
-  <script src="js/leaderboard.js"></script>
-  <script src="js/dashboard.js"></script>
-  <script src="js/sw-ui.js"></script>
   <script defer src="js/main.js"></script>
-  <!-- Service worker registration will be handled inside main.js (registers /lvl/serviceworker.js) -->
 </head>
 
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
 
-  <!-- Header -->
+n  <!-- Header -->
   <header class="p-4 text-center border-b border-gray-800">
-    <div class="flex items-center justify-between max-w-3xl mx-auto">
-      <h1 class="text-xl font-semibold text-green-400">Level Up Life</h1>
-      <div class="flex items-center gap-3">
-        <div id="swVersion" class="text-xs text-gray-500 hidden" title="Service worker cache name"></div>
-        <button id="notifBell" class="text-gray-300 hover:text-green-400" hx-get="partials/notifications.html" hx-target="#app" hx-swap="innerHTML" aria-label="Notifications">
-        🔔 <span id="notifCount" class="ml-1 text-xs bg-red-600 text-white rounded-full px-1 hidden">0</span>
-        </button>
-        <button id="installPWA" class="text-gray-300 hover:text-green-400 hidden" aria-label="Install app">⬇️ Install</button>
-      </div>
-    </div>
+    <h1 class="text-xl font-semibold text-green-400">Level Up Life</h1>
   </header>
 
   <!-- Main Container -->

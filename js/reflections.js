@@ -24,27 +24,7 @@
         card.appendChild(t); card.appendChild(meta); card.appendChild(del);
         listEl.appendChild(card);
       });
-      // ensure list delegated handlers are wired when rendering
-      try{ wireListDelegation(); }catch(e){}
     }catch(e){ console.error('renderReflections', e); }
-  }
-
-  // Ensure delegated handlers for the reflections list (delete action)
-  function wireListDelegation(){
-    try{
-      const listEl = document.getElementById('reflectionsList');
-      if (!listEl) return;
-      if (listEl.dataset.wired) return;
-      listEl.addEventListener('click', (e) => {
-        const btn = e.target.closest && e.target.closest('.delete-reflection');
-        if (!btn) return;
-        const id = btn.dataset.id; if (!id) return;
-        if (!confirm('Delete this reflection?')) return;
-        try{ if (window.Storage && typeof Storage.removeReflection === 'function') Storage.removeReflection(id); }catch(err){ console.error('removeReflection error', err); }
-        render(); if (window.showToast) showToast('Reflection deleted');
-      });
-      listEl.dataset.wired = 'true';
-    }catch(e){ console.error('wireListDelegation error', e); }
   }
 
   function wireForm() {
@@ -67,8 +47,15 @@
         const nav = document.querySelector(".nav-btn[data-page='reflections']"); if (nav) { nav.classList.add('bell-pulse'); setTimeout(()=>nav.classList.remove('bell-pulse'),800); }
       });
 
-      // wire delegated handlers for list actions (delete)
-      try{ wireListDelegation(); }catch(e){}
+      const listEl = document.getElementById('reflectionsList');
+      listEl.addEventListener('click', (e) => {
+        const btn = e.target.closest && e.target.closest('.delete-reflection');
+        if (!btn) return;
+        const id = btn.dataset.id; if (!id) return;
+        if (!confirm('Delete this reflection?')) return;
+        if (window.Storage && typeof Storage.removeReflection === 'function') Storage.removeReflection(id);
+        render(); if (window.showToast) showToast('Reflection deleted');
+      });
 
       form.dataset.wired = 'true';
       render();
