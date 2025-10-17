@@ -79,6 +79,25 @@
         navigator.serviceWorker.addEventListener('message', (ev)=>{ try{ const data = ev.data||{}; if (data && data.type === 'SW_UPDATED') createUpdateBanner(); }catch(e){} });
       }).catch(err=>console.warn('SW register failed', err));
 
+      // quick deployed-version check: fetch sw-version.json (no-store) and compare to last seen
+      try{
+        (async function(){
+          try{
+            const res = await fetch('sw-version.json', {cache: 'no-store'});
+            if (!res || !res.ok) return;
+            const data = await res.json();
+            const remote = data && data.cache;
+            const last = localStorage.getItem('lvl_sw_version') || null;
+            if (remote && remote !== last) {
+              localStorage.setItem('lvl_sw_version', remote);
+              // ask SW to check for updates and show banner
+              try{ if (swRegistration && swRegistration.active && swRegistration.active.postMessage) swRegistration.active.postMessage({type:'CHECK_FOR_UPDATE'}); }catch(e){}
+              try{ createUpdateBanner(); }catch(e){}
+            }
+          }catch(e){}
+        })();
+      }catch(e){}
+
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', ()=>{
         if (refreshing) return; if (!userAcceptedUpdate) return; refreshing = true; window.location.reload();
