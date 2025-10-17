@@ -14,8 +14,18 @@
   const AUTO_APPLY_SECONDS = isMobile ? 3 : 6;
 
       function createUpdateBanner(){
-        // don't spam the banner repeatedly in the same session
-        try{ const shown = sessionStorage.getItem('lvl_update_banner_shown'); if (shown) return; sessionStorage.setItem('lvl_update_banner_shown', '1'); }catch(e){}
+        try{
+          // Prefer to only show once per deployed version. We use the sw-version.json value stored in localStorage ('lvl_sw_version').
+          const ver = localStorage.getItem('lvl_sw_version');
+          if (ver) {
+            const shownFor = localStorage.getItem('lvl_update_banner_shown_for');
+            if (shownFor === ver) return; // already shown for this version
+            localStorage.setItem('lvl_update_banner_shown_for', ver);
+          } else {
+            // fallback: only once per session
+            const shown = sessionStorage.getItem('lvl_update_banner_shown'); if (shown) return; sessionStorage.setItem('lvl_update_banner_shown', '1');
+          }
+        }catch(e){}
         if (document.getElementById('updateBanner')) return;
         const banner = document.createElement('div');
         banner.id = 'updateBanner';

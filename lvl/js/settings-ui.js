@@ -65,7 +65,17 @@
       // test notification
       const testBtn = document.getElementById('testNotifBtn');
       if (testBtn && !testBtn.dataset.wired) {
-        testBtn.addEventListener('click', () => { try{ if (window.Notifs && window.Notifs.add) { window.Notifs.add('test', 'This is a test notification'); window.dispatchEvent(new CustomEvent('lvl:notifs:update')); } }catch(e){} });
+        testBtn.addEventListener('click', () => {
+          try{
+            if (window.Notifs && window.Notifs.add) {
+              window.Notifs.add('test', 'This is a test notification');
+              window.dispatchEvent(new CustomEvent('lvl:notifs:update'));
+            } else {
+              // fallback: localStorage-only quick notify + toast
+              try{ const tmsg = 'This is a test notification (fallback)'; if (window.AppUtils && window.AppUtils.showToast) window.AppUtils.showToast(tmsg); else { const d = document.createElement('div'); d.textContent = tmsg; d.className='fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm animate-fadeInOut z-50'; document.body.appendChild(d); setTimeout(()=>d.remove(),2500);} }catch(e){}
+            }
+          }catch(e){}
+        });
         testBtn.dataset.wired = 'true';
       }
 
