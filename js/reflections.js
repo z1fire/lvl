@@ -27,6 +27,27 @@
     }catch(e){ console.error('renderReflections', e); }
   }
 
+  // Wire delegated delete handler for the reflections list. This is separate
+  // from the form wiring because the reflections partial is sometimes
+  // rendered as a placeholder without the form element. We attach the click
+  // handler directly to the list container and guard against double-wiring.
+  function wireListDelegation() {
+    try{
+      const listEl = document.getElementById('reflectionsList');
+      if(!listEl) return;
+      if (listEl.dataset.wiredDelete) return;
+      listEl.addEventListener('click', (e) => {
+        const btn = e.target.closest && e.target.closest('.delete-reflection');
+        if (!btn) return;
+        const id = btn.dataset.id; if (!id) return;
+        if (!confirm('Delete this reflection?')) return;
+        if (window.Storage && typeof Storage.removeReflection === 'function') Storage.removeReflection(id);
+        render(); if (window.showToast) showToast('Reflection deleted');
+      });
+      listEl.dataset.wiredDelete = 'true';
+    }catch(e){ console.error('wireListDelegation', e); }
+  }
+
   function wireForm() {
     try{
       const form = document.getElementById('reflectionForm');
@@ -47,18 +68,14 @@
         const nav = document.querySelector(".nav-btn[data-page='reflections']"); if (nav) { nav.classList.add('bell-pulse'); setTimeout(()=>nav.classList.remove('bell-pulse'),800); }
       });
 
-      const listEl = document.getElementById('reflectionsList');
-      listEl.addEventListener('click', (e) => {
-        const btn = e.target.closest && e.target.closest('.delete-reflection');
-        if (!btn) return;
-        const id = btn.dataset.id; if (!id) return;
-        if (!confirm('Delete this reflection?')) return;
-        if (window.Storage && typeof Storage.removeReflection === 'function') Storage.removeReflection(id);
-        render(); if (window.showToast) showToast('Reflection deleted');
-      });
+      // ensure the list has its delegated delete handler (works even if
+      // the partial doesn't include the form)
+      wireListDelegation();
 
       form.dataset.wired = 'true';
       render();
+      // ensure delete handlers are wired for the rendered list
+      wireListDelegation();
     }catch(e){ console.error('reflections wire error', e); }
   }
   // Show a small modal for quick reflection entry (used by dashboard Reflect button)
