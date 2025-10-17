@@ -8,6 +8,7 @@
   let swRegistration = null;
   let userAcceptedUpdate = false;
   let autoApplyTimer = null;
+  let currentBanner = null;
   // auto-apply timeout (seconds). Use a shorter timeout for mobile devices.
   const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
   const AUTO_APPLY_SECONDS = isMobile ? 3 : 6;
@@ -24,16 +25,20 @@
             <button id="updateLaterBtn" class="px-3 py-1 rounded bg-gray-700 text-sm">Later</button>
           </div>
         `;
-        document.body.appendChild(banner);
+  document.body.appendChild(banner);
+  currentBanner = banner;
         const countdownEl = document.getElementById('updateCountdown');
         const later = document.getElementById('updateLaterBtn'); if (later) later.addEventListener('click', ()=>{
           if (autoApplyTimer) { clearInterval(autoApplyTimer); autoApplyTimer = null; }
-          banner.remove();
+          removeUpdateBanner();
         });
         const now = document.getElementById('updateNowBtn'); if (now) now.addEventListener('click', async ()=>{
           try{
             if (!swRegistration) return;
-            if (swRegistration.waiting) { userAcceptedUpdate = true; try{ swRegistration.waiting.postMessage({type:'SKIP_WAITING'}); }catch(e){} }
+            // user accepted — remove the banner immediately so the UI isn't stuck
+            userAcceptedUpdate = true;
+            removeUpdateBanner();
+            if (swRegistration.waiting) { try{ swRegistration.waiting.postMessage({type:'SKIP_WAITING'}); }catch(e){} }
             else { const installing = swRegistration.installing; if (installing) try{ installing.postMessage({type:'SKIP_WAITING'}); }catch(e){} }
             _toast('Applying update...');
           }catch(e){ console.error('update now error', e); }
@@ -51,6 +56,7 @@
                 if (!swRegistration) return;
                 // mark as accepted so controllerchange will reload
                 userAcceptedUpdate = true;
+                removeUpdateBanner();
                 if (swRegistration.waiting) { swRegistration.waiting.postMessage({type:'SKIP_WAITING'}); }
                 else if (swRegistration.installing) { swRegistration.installing.postMessage({type:'SKIP_WAITING'}); }
                 _toast('Applying update...');
@@ -76,7 +82,7 @@
           const newWorker = reg.installing; if (!newWorker) return;
           newWorker.addEventListener('statechange', ()=>{ if (newWorker.state==='installed' && navigator.serviceWorker.controller) createUpdateBanner(); });
         });
-        navigator.serviceWorker.addEventListener('message', (ev)=>{ try{ const data = ev.data||{}; if (data && data.type === 'SW_UPDATED') createUpdateBanner(); }catch(e){} });
+  navigator.serviceWorker.addEventListener('message', (ev)=>{ try{ const data = ev.data||{}; if (data && data.type === 'SW_UPDATED') { createUpdateBanner(); } if (data && (data.type === 'SW_ACTIVATED' || data.type === 'SW_UPDATED')) { _toast('Update ready'); removeUpdateBanner(); } }catch(e){} });
       }).catch(err=>console.warn('SW register failed', err));
 
       // quick deployed-version check: fetch sw-version.json (no-store) and compare to last seen
@@ -100,8 +106,16 @@
 
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', ()=>{
-        if (refreshing) return; if (!userAcceptedUpdate) return; refreshing = true; window.location.reload();
+        if (refreshing) return; if (!userAcceptedUpdate) return; refreshing = true; try{ removeUpdateBanner(); }catch(e){} window.location.reload();
       });
+
+      function removeUpdateBanner(){
+        try{
+          if (autoApplyTimer) { clearInterval(autoApplyTimer); autoApplyTimer = null; }
+          if (currentBanner && currentBanner.parentNode) { currentBanner.parentNode.removeChild(currentBanner); }
+          currentBanner = null;
+        }catch(e){}
+      }
 
     }catch(e){ console.error('SWUI.init error', e); }
   }
