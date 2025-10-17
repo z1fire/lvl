@@ -1,5 +1,5 @@
 // Modern service worker with cache-first for static, network-first for navigation, and update checks
-const CACHE_VERSION = 'v1.0.2';
+const CACHE_VERSION = 'v1.0.3';
 const STATIC_CACHE = `lvl-static-${CACHE_VERSION}`;
 const OFFLINE_URL = './index.html';
 

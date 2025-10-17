@@ -95,7 +95,34 @@
           newWorker.addEventListener('statechange', ()=>{ if (newWorker.state==='installed' && navigator.serviceWorker.controller) createUpdateBanner(); });
         });
   // manual update button removed for production
-  navigator.serviceWorker.addEventListener('message', (ev)=>{ try{ const data = ev.data||{}; if (data && data.type === 'SW_UPDATED') { createUpdateBanner(); } if (data && (data.type === 'SW_ACTIVATED' || data.type === 'SW_UPDATED')) { _toast('Update ready'); removeUpdateBanner(); } }catch(e){} });
+  navigator.serviceWorker.addEventListener('message', (ev)=>{
+    try{
+      const data = ev.data || {};
+      if (!data) return;
+      // When the SW reports there's an updated cache available, try to auto-apply
+      // the update immediately if we have a waiting worker. Otherwise show the
+      // normal banner so the user can choose (or the auto-apply countdown runs).
+      if (data.type === 'SW_UPDATED') {
+        // Remember that an update is available and the user (or auto policy)
+        // has implicitly accepted applying it. When the new worker reaches the
+        // 'waiting' state we will send SKIP_WAITING. If it's already waiting,
+        // send the message immediately.
+        userAcceptedUpdate = true;
+        if (swRegistration && swRegistration.waiting) {
+          try{ swRegistration.waiting.postMessage({type: 'SKIP_WAITING'}); _toast('Applying update...'); }catch(e){}
+        } else {
+          // show banner so user sees that an update is arriving (auto countdown will apply it)
+          createUpdateBanner();
+        }
+        return;
+      }
+      // When the worker becomes active, notify the user and remove banner if present
+      if (data.type === 'SW_ACTIVATED') {
+        _toast('Update activated');
+        removeUpdateBanner();
+      }
+    }catch(e){}
+  });
   }).catch(err=>console.warn('SW register failed', err));
 
       // quick deployed-version check: fetch sw-version.json (no-store) and compare to last seen
