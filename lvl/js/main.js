@@ -846,25 +846,78 @@ function loadActivities() {
       toggleFavorite(act.id);
     });
 
-    // Pointer/touch handlers for mobile reliability
-    const pointerHandler = (e) => {
-      try {
-        // ignore if originated from star button
-        if (e.target && e.target.closest && e.target.closest('button[data-activity-id]')) return;
-        // For pointer events: act when pointerup and not a mouse (i.e., touch or pen)
-        if (e.type === 'pointerup' && e.pointerType && e.pointerType !== 'mouse') {
-          toggleFavorite(act.id);
-          return;
-        }
-        // For touch events fallback (older browsers), act on touchend
-        if (e.type === 'touchend') {
-          toggleFavorite(act.id);
-          return;
-        }
-      } catch (err) { /* ignore */ }
-    };
-    card.addEventListener('pointerup', pointerHandler);
-    card.addEventListener('touchend', (e) => { /* fallback for older browsers */ pointerHandler(e); });
+    // Robust tap-vs-scroll detection for touch devices
+    (function addTapScrollDistinction() {
+      const MOVE_THRESHOLD = 10; // px
+      const TIME_THRESHOLD = 500; // ms
+      let pointerState = null;
+
+      card.addEventListener('pointerdown', (ev) => {
+        try {
+          // ignore right-clicks / non-primary buttons
+          if (ev.button && ev.button !== 0) return;
+          pointerState = {
+            id: ev.pointerId,
+            startX: ev.clientX,
+            startY: ev.clientY,
+            startTime: Date.now(),
+            moved: false
+          };
+        } catch (err) {}
+      }, { passive: true });
+
+      card.addEventListener('pointermove', (ev) => {
+        try {
+          if (!pointerState || ev.pointerId !== pointerState.id) return;
+          const dx = Math.abs(ev.clientX - pointerState.startX);
+          const dy = Math.abs(ev.clientY - pointerState.startY);
+          if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) pointerState.moved = true;
+        } catch (err) {}
+      }, { passive: true });
+
+      card.addEventListener('pointerup', (ev) => {
+        try {
+          if (!pointerState || ev.pointerId !== pointerState.id) { pointerState = null; return; }
+          const duration = Date.now() - (pointerState.startTime || 0);
+          // Only treat as tap when not moved significantly and short duration
+          if (!pointerState.moved && duration < TIME_THRESHOLD) {
+            if (!(ev.target && ev.target.closest && ev.target.closest('button[data-activity-id]'))) {
+              toggleFavorite(act.id);
+            }
+          }
+        } catch (err) {}
+        pointerState = null;
+      }, { passive: true });
+
+      // Fallback for older browsers: touch events
+      card.addEventListener('touchstart', (ev) => {
+        try{
+          const t = ev.touches && ev.touches[0]; if (!t) return;
+          pointerState = { startX: t.clientX, startY: t.clientY, startTime: Date.now(), moved: false };
+        }catch(e){}
+      }, { passive: true });
+      card.addEventListener('touchmove', (ev) => {
+        try{
+          const t = ev.touches && ev.touches[0]; if (!t || !pointerState) return;
+          const dx = Math.abs(t.clientX - pointerState.startX);
+          const dy = Math.abs(t.clientY - pointerState.startY);
+          if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) pointerState.moved = true;
+        }catch(e){}
+      }, { passive: true });
+      card.addEventListener('touchend', (ev) => {
+        try{
+          const ct = ev.changedTouches && ev.changedTouches[0];
+          const duration = Date.now() - (pointerState && pointerState.startTime || 0);
+          if (pointerState && !pointerState.moved && duration < TIME_THRESHOLD) {
+            const target = ct && document.elementFromPoint(ct.clientX, ct.clientY);
+            if (!(target && target.closest && target.closest('button[data-activity-id]'))) {
+              toggleFavorite(act.id);
+            }
+          }
+        }catch(e){}
+        pointerState = null;
+      }, { passive: true });
+    })();
 
     // Keyboard support: Enter or Space toggles favorite
     card.addEventListener('keydown', (e) => {
