@@ -5,8 +5,12 @@
   function init(){
     try{
       if (!('serviceWorker' in navigator)) return;
-      let swRegistration = null;
-      let userAcceptedUpdate = false;
+  let swRegistration = null;
+  let userAcceptedUpdate = false;
+  let autoApplyTimer = null;
+  // auto-apply timeout (seconds). Use a shorter timeout for mobile devices.
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+  const AUTO_APPLY_SECONDS = isMobile ? 3 : 6;
 
       function createUpdateBanner(){
         if (document.getElementById('updateBanner')) return;
@@ -14,14 +18,18 @@
         banner.id = 'updateBanner';
         banner.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-gray-100 px-4 py-3 rounded-lg shadow-lg z-60 flex items-center gap-3';
         banner.innerHTML = `
-          <div class="flex-1 text-sm">A new version is available.</div>
+          <div class="flex-1 text-sm">A new version is available. Reloading in <span id="updateCountdown">${AUTO_APPLY_SECONDS}</span>s</div>
           <div class="flex gap-2">
             <button id="updateNowBtn" class="px-3 py-1 rounded bg-green-600 text-white text-sm">Reload now</button>
             <button id="updateLaterBtn" class="px-3 py-1 rounded bg-gray-700 text-sm">Later</button>
           </div>
         `;
         document.body.appendChild(banner);
-        const later = document.getElementById('updateLaterBtn'); if (later) later.addEventListener('click', ()=>banner.remove());
+        const countdownEl = document.getElementById('updateCountdown');
+        const later = document.getElementById('updateLaterBtn'); if (later) later.addEventListener('click', ()=>{
+          if (autoApplyTimer) { clearInterval(autoApplyTimer); autoApplyTimer = null; }
+          banner.remove();
+        });
         const now = document.getElementById('updateNowBtn'); if (now) now.addEventListener('click', async ()=>{
           try{
             if (!swRegistration) return;
@@ -30,11 +38,40 @@
             _toast('Applying update...');
           }catch(e){ console.error('update now error', e); }
         });
+
+        // Auto-apply countdown
+        try{
+          let secs = AUTO_APPLY_SECONDS;
+          autoApplyTimer = setInterval(()=>{
+            secs -= 1;
+            if (countdownEl) countdownEl.textContent = String(secs);
+            if (secs <= 0) {
+              clearInterval(autoApplyTimer); autoApplyTimer = null;
+              try{
+                if (!swRegistration) return;
+                // mark as accepted so controllerchange will reload
+                userAcceptedUpdate = true;
+                if (swRegistration.waiting) { swRegistration.waiting.postMessage({type:'SKIP_WAITING'}); }
+                else if (swRegistration.installing) { swRegistration.installing.postMessage({type:'SKIP_WAITING'}); }
+                _toast('Applying update...');
+              }catch(e){ console.error('auto apply failed', e); }
+            }
+          }, 1000);
+        }catch(e){}
       }
 
       navigator.serviceWorker.register('serviceworker.js').then(reg=>{
         swRegistration = reg;
         if (reg.waiting) createUpdateBanner();
+        // trigger an explicit update check and request the SW to refresh its cached assets
+        try{
+          if (reg.update) try{ reg.update(); }catch(e){}
+          // Ask the active worker to check for updates (it will fetch assets no-store)
+          if (reg.active && reg.active.postMessage) {
+            try{ reg.active.postMessage({type:'CHECK_FOR_UPDATE'}); }catch(e){}
+          }
+        }catch(e){}
+
         reg.addEventListener('updatefound', ()=>{
           const newWorker = reg.installing; if (!newWorker) return;
           newWorker.addEventListener('statechange', ()=>{ if (newWorker.state==='installed' && navigator.serviceWorker.controller) createUpdateBanner(); });

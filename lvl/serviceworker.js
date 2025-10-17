@@ -1,5 +1,5 @@
 // Modern service worker with cache-first for static, network-first for navigation, and update checks
-const CACHE_VERSION = 'v1.0.1';
+const CACHE_VERSION = 'v1.0.2';
 const STATIC_CACHE = `lvl-static-${CACHE_VERSION}`;
 const OFFLINE_URL = './index.html';
 
@@ -19,7 +19,9 @@ self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(STATIC_CACHE);
     await cache.addAll(ASSETS);
-    self.skipWaiting();
+    // allow the new SW to move to 'installed' and then wait for skipWaiting message
+    // (we still call skipWaiting here as a fallback)
+    try{ self.skipWaiting(); }catch(e){}
   })());
 });
 
@@ -28,6 +30,11 @@ self.addEventListener('activate', (event) => {
     const keys = await caches.keys();
     await Promise.all(keys.filter(k => k !== STATIC_CACHE).map(k => caches.delete(k)));
     await self.clients.claim();
+    // notify clients that we are active and caches cleaned
+    try{
+      const clientsList = await self.clients.matchAll({includeUncontrolled: true});
+      clientsList.forEach(c => c.postMessage({ type: 'SW_ACTIVATED', cache: STATIC_CACHE }));
+    }catch(e){}
   })());
 });
 
@@ -36,7 +43,8 @@ self.addEventListener('message', (ev) => {
   try{
     const data = ev.data || {};
     if (data && data.type === 'SKIP_WAITING') {
-      self.skipWaiting();
+      // Immediately activate this worker
+      try{ self.skipWaiting(); }catch(e){}
     }
     if (data && data.type === 'CHECK_FOR_UPDATE') {
       // simple strategy: re-fetch assets and update cache if changed
