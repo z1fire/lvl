@@ -246,7 +246,31 @@ Storage.setClockBaselineDays = function(daysAgo = 0){
 };
 
 // Helper to add arbitrary notifications from other parts of the app
-Storage.addNotification = function(type, message, meta){ try { if (window.Notifs && window.Notifs.add) window.Notifs.add(type, message, meta); } catch(e){} };
+// This will prefer the Notifs module but falls back to persisting into the
+// notifications key so the UI can still render notifications even if the
+// Notifs module hasn't been wired yet (timing issues on partial loads).
+Storage.addNotification = function(type, message, meta){
+  try {
+    if (window.Notifs && typeof window.Notifs.add === 'function') {
+      window.Notifs.add(type, message, meta);
+      return;
+    }
+  } catch(e) { /* ignore and fall through to fallback persistence */ }
+
+  // Fallback: persist into same storage key used by Notifs and fire UI events
+  try {
+    const KEY = 'lvl_notifications_v1';
+    const raw = localStorage.getItem(KEY) || '[]';
+    let arr = [];
+    try { arr = JSON.parse(raw); } catch(e) { arr = []; }
+    const obj = { id: Date.now() + '-' + Math.random().toString(36).slice(2,7), type: type || 'generic', message: String(message || ''), meta: meta || null, ts: Date.now(), read: false };
+    arr.push(obj);
+      try { localStorage.setItem(KEY, JSON.stringify(arr)); } catch(e) {}
+    // fire events so UI updates (mirror behavior from Notifs.add)
+    try { window.dispatchEvent(new CustomEvent('lvl:notifs:update')); } catch(e){}
+    try { window.dispatchEvent(new CustomEvent('lvl:notifs:added', { detail: obj })); } catch(e){}
+  } catch(e) { /* ignore */ }
+};
 
 function capitalize(s){ return String(s || '').charAt(0).toUpperCase() + String(s || '').slice(1); }
 

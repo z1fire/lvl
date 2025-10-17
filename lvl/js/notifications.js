@@ -13,8 +13,7 @@ const Notifs = (function(){
     const obj = { id: Date.now() + '-' + Math.random().toString(36).slice(2,7), type, message, meta: meta||null, ts: Date.now(), read: false };
     arr.push(obj);
     save(arr);
-    // emit two events: generic update and a specific added event with detail
-    console.debug('Notifs.add', obj);
+  // emit two events: generic update and a specific added event with detail
     fireUpdate();
     window.dispatchEvent(new CustomEvent('lvl:notifs:added', { detail: obj }));
   }

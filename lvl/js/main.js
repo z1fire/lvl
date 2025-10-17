@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Level Up Life started!");
+  // app started
 
   // PWA install prompt handling
   let deferredPrompt = null;
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     deferredPrompt = e;
     try { window.deferredPrompt = e; } catch(err) {}
-    console.log('beforeinstallprompt event fired', e);
+  // beforeinstallprompt event fired
     if (installBtn) { installBtn.classList.remove('hidden'); installBtn.addEventListener('click', async () => {
       try{ deferredPrompt.prompt(); const choice = await deferredPrompt.userChoice; if (choice && choice.outcome === 'accepted') { showToast('App installed'); } deferredPrompt = null; installBtn.classList.add('hidden'); }catch(e){}
     }); }
@@ -75,8 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById('leaderboardList')) {
       try { if (window.Leaderboard && typeof window.Leaderboard.wire === 'function') window.Leaderboard.wire(); } catch(e){}
     }
-    // Wire settings partial when present
-    if (document.getElementById('settingsPage') || document.getElementById('settingsContainer')) {
+    // Wire settings partial when present (look for a settings-specific element)
+    if (document.getElementById('baselineDaysInput')) {
       try { if (window.SettingsUI && typeof window.SettingsUI.wire === 'function') window.SettingsUI.wire(); } catch(e){}
     }
     // update notification badge when content changes
@@ -105,7 +105,7 @@ document.body.addEventListener('htmx:afterSwap', () => {
 });
 
   // Service worker UI delegated to SWUI
-  try{ if (window.SWUI && typeof window.SWUI.init === 'function') window.SWUI.init(); if (window.SWUI && typeof window.SWUI.devButtonWire === 'function') window.SWUI.devButtonWire(); }catch(e){}
+  try{ if (window.SWUI && typeof window.SWUI.init === 'function') window.SWUI.init(); }catch(e){}
 
   // Delegated reset handler: catch clicks on reset button even if partial content reloaded
   document.body.addEventListener('click', (e) => {
@@ -121,10 +121,7 @@ document.body.addEventListener('htmx:afterSwap', () => {
   // wire reflect button on dashboard
   try { wireReflectButton(); } catch(e) {}
   // expose SW version in header for debugging
-  try {
-    const swEl = document.getElementById('swVersion');
-    if (swEl) { swEl.textContent = 'sw: lvl-static-v2'; swEl.classList.remove('hidden'); }
-  } catch(e) {}
+  // SW version display removed from header for production
   // Notifications wiring delegated to NotifsUI (sets up badge, list render and bell pulses)
   try{ if (window.NotifsUI && typeof window.NotifsUI.wire === 'function') window.NotifsUI.wire(); }catch(e){}
 });
@@ -268,30 +265,4 @@ function showToast(msg) {
     try{ if (window.AppUtils && window.AppUtils.announceForA11y) return window.AppUtils.announceForA11y(text); }catch(e){}
   }
 
-  // Development helper: when running on localhost, show a small update button
-  try{
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      const devBtn = document.createElement('button');
-      devBtn.id = 'forceReloadBtn';
-      devBtn.textContent = 'Update assets (dev)';
-      devBtn.className = 'fixed top-4 right-4 z-60 bg-yellow-500 text-black px-3 py-1 rounded';
-      devBtn.style.fontSize = '12px';
-      devBtn.title = 'Unregister service worker, clear caches and reload (dev only)';
-      devBtn.addEventListener('click', async () => {
-        showToast('Clearing service worker and caches...');
-        try{
-          if ('serviceWorker' in navigator) {
-            const regs = await navigator.serviceWorker.getRegistrations();
-            await Promise.all(regs.map(r => r.unregister().catch(()=>{})));
-          }
-          if (window.caches && caches.keys) {
-            const keys = await caches.keys();
-            await Promise.all(keys.map(k => caches.delete(k)));
-          }
-        }catch(e){ console.error('dev clear error', e); }
-        setTimeout(()=> location.reload(), 200);
-      });
-      document.body.appendChild(devBtn);
-    }
-  }catch(e){}
+  // Dev helper removed: manual dev 'Update assets' button is no longer added here.

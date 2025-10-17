@@ -94,8 +94,7 @@
           const newWorker = reg.installing; if (!newWorker) return;
           newWorker.addEventListener('statechange', ()=>{ if (newWorker.state==='installed' && navigator.serviceWorker.controller) createUpdateBanner(); });
         });
-        // show a manual check button when debugging is enabled
-        try{ showManualUpdateButton(); }catch(e){}
+  // manual update button removed for production
   navigator.serviceWorker.addEventListener('message', (ev)=>{ try{ const data = ev.data||{}; if (data && data.type === 'SW_UPDATED') { createUpdateBanner(); } if (data && (data.type === 'SW_ACTIVATED' || data.type === 'SW_UPDATED')) { _toast('Update ready'); removeUpdateBanner(); } }catch(e){} });
   }).catch(err=>console.warn('SW register failed', err));
 
@@ -134,49 +133,16 @@
     }catch(e){ console.error('SWUI.init error', e); }
   }
 
-  // manual update check button to help debug mobile update issues
-  function showManualUpdateButton(){
-    try{
-      const params = new URLSearchParams(location.search);
-      const enabled = params.has('debug_sw') || localStorage.getItem('lvl_sw_debug') === '1';
-      if (!enabled) return;
-      if (document.getElementById('swCheckBtn')) return;
-      const btn = document.createElement('button');
-      btn.id = 'swCheckBtn';
-      btn.textContent = 'Check for updates';
-      btn.className = 'fixed top-14 right-4 z-60 bg-blue-600 text-white px-3 py-1 rounded';
-      btn.style.fontSize = '12px';
-      btn.addEventListener('click', async ()=>{
-        try{
-          if (!('serviceWorker' in navigator)) return _toast('No ServiceWorker');
-          _toast('Checking for updates...');
-          if (swRegistration && swRegistration.update) try{ await swRegistration.update(); }catch(e){}
-          try{ if (swRegistration && swRegistration.active && swRegistration.active.postMessage) swRegistration.active.postMessage({type:'CHECK_FOR_UPDATE'}); }catch(e){}
-          // fetch remote sw-version for info
-          try{ const res = await fetch('sw-version.json', {cache:'no-store'}); if (res && res.ok){ const data = await res.json(); const remote = data && data.cache; const local = localStorage.getItem('lvl_sw_version') || '(none)'; _toast('remote: ' + remote + ' local: ' + local); } }
-          catch(e){ /* ignore */ }
-        }catch(e){ console.error('manual update check failed', e); _toast('Update check failed'); }
-      });
-      document.body.appendChild(btn);
-    }catch(e){}
-  }
+  // Production: manual SW debug button removed.
 
-  // Dev helper: create a small button when running on localhost to clear SW and caches
-  function devButtonWire(){
-    try{
-      const hostname = window.location.hostname;
-      if (hostname === 'localhost' || hostname === '127.0.0.1'){
-        const devBtn = document.createElement('button');
-        devBtn.id = 'forceReloadBtn'; devBtn.textContent = 'Update assets (dev)'; devBtn.className = 'fixed top-4 right-4 z-60 bg-yellow-500 text-black px-3 py-1 rounded'; devBtn.style.fontSize='12px'; devBtn.title='Unregister service worker, clear caches and reload (dev only)';
-        devBtn.addEventListener('click', async ()=>{
-          _toast('Clearing service worker and caches...');
-          try{ if ('serviceWorker' in navigator){ const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r=>r.unregister().catch(()=>{}))); } if (window.caches && caches.keys){ const keys = await caches.keys(); await Promise.all(keys.map(k=>caches.delete(k))); } }catch(e){ console.error('dev clear error', e); }
-          setTimeout(()=>location.reload(), 200);
-        });
-        document.body.appendChild(devBtn);
-      }
-    }catch(e){}
-  }
+  // devButtonWire removed — dev-only forceReload button has been removed
 
-  window.SWUI = { init, devButtonWire };
+  // Ensure manual check button is attached when HTMX swaps the settings partial into the DOM
+  try{
+    window.addEventListener('htmx:afterSwap', (ev) => {
+      try{ showManualUpdateButton(); }catch(e){}
+    });
+  }catch(e){}
+
+  window.SWUI = { init };
 })();

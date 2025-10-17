@@ -62,22 +62,7 @@
         setBaselineBtn.dataset.wired = 'true';
       }
 
-      // test notification
-      const testBtn = document.getElementById('testNotifBtn');
-      if (testBtn && !testBtn.dataset.wired) {
-        testBtn.addEventListener('click', () => {
-          try{
-            if (window.Notifs && window.Notifs.add) {
-              window.Notifs.add('test', 'This is a test notification');
-              window.dispatchEvent(new CustomEvent('lvl:notifs:update'));
-            } else {
-              // fallback: localStorage-only quick notify + toast
-              try{ const tmsg = 'This is a test notification (fallback)'; if (window.AppUtils && window.AppUtils.showToast) window.AppUtils.showToast(tmsg); else { const d = document.createElement('div'); d.textContent = tmsg; d.className='fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm animate-fadeInOut z-50'; document.body.appendChild(d); setTimeout(()=>d.remove(),2500);} }catch(e){}
-            }
-          }catch(e){}
-        });
-        testBtn.dataset.wired = 'true';
-      }
+      // Test notification UI and diagnostic removed for production build
 
       // reset progress button
       const resetBtn = document.getElementById('resetProgressBtn');
@@ -104,4 +89,44 @@
   }
 
   window.SettingsUI = { wire };
+})();
+
+// Fallback delegated handlers: in case per-element wiring doesn't run (timing/partial issues),
+// listen for clicks on settings controls and handle them if they are not already wired.
+(function(){
+  try{
+    if (document.body && !document.body.dataset.settingsDelegated) {
+      document.body.dataset.settingsDelegated = '1';
+      document.body.addEventListener('click', (e) => {
+        try{
+          const btn = e.target.closest && e.target.closest('#testNotifBtn, #simGainStreak, #simMissStreak, #advanceDayBtn, #setBaselineBtn, #resetProgressBtn, #saveDisplayNameBtn');
+          if (!btn) return;
+          // if already wired by SettingsUI.wire, skip (avoid duplicate handling)
+          if (btn.dataset && btn.dataset.wired) return;
+
+          // emulate per-button behavior from SettingsUI.wire
+          const id = btn.id;
+          // Test notification delegated handler removed (UI not present in production)
+          if (id === 'simGainStreak') {
+            try{ const user = Storage.load(); user.streak = (user.streak || 0) + 1; Storage.save(user); Storage.addNotification('streak', `🔥 You hit a ${user.streak}-day streak!`, {streak: user.streak}); window.dispatchEvent(new CustomEvent('lvl:notifs:update')); const bell = document.getElementById('notifBell'); if (bell) { bell.classList.add('xp-flash'); setTimeout(()=>bell.classList.remove('xp-flash'),700); } }catch(e){ console.error('delegated simGainStreak', e); }
+          }
+          else if (id === 'simMissStreak') {
+            try{ const user = Storage.load(); user.streak = Math.max(0, (user.streak || 0) - 1); Storage.save(user); const result = Storage.applyDecay(1,5); Storage.addNotification('miss', `⚠️ You missed your streak. XP reduced by ${result.delta.toLocaleString()} (sim).`, { delta: result.delta, percent: result.percentApplied }); window.dispatchEvent(new CustomEvent('lvl:notifs:update')); const bell = document.getElementById('notifBell'); if (bell) { bell.classList.add('xp-flash'); setTimeout(()=>bell.classList.remove('xp-flash'),700); } }catch(e){ console.error('delegated simMissStreak', e); }
+          }
+          else if (id === 'advanceDayBtn') {
+            try{ const res = Storage.advanceDays(1, 5); if (res && res.applied) { const d = res.decayResult; const delta = d && d.delta ? d.delta : (res.decayResult && res.decayResult.delta) || 0; const parts = []; try{ for (const [k, v] of Object.entries(d.perAttribute || {})){ const before = Number(v.before || 0); const after = Number(v.after || 0); const pd = before - after; if (pd !== 0){ const name = String(k).charAt(0).toUpperCase() + String(k).slice(1); parts.push(`${name} -${Number(pd).toLocaleString()} XP`); } } }catch(e){} const breakdown = parts.length ? (' Changes: ' + parts.join('; ')) : ''; const message = `Day advanced. Missed ${res.missedDays} day(s). XP reduced by ${Number(delta).toLocaleString()}.${breakdown}`; Storage.addNotification('decay', message, { delta: delta, days: res.missedDays, perAttribute: d.perAttribute }); window.dispatchEvent(new CustomEvent('lvl:notifs:update')); try{ if (window.Dashboard && typeof window.Dashboard.loadDashboardData === 'function') window.Dashboard.loadDashboardData(); }catch(e){} } else { Storage.addNotification('time', `Day advanced. No decay applied.`); window.dispatchEvent(new CustomEvent('lvl:notifs:update')); } }catch(e){ console.error('delegated advanceDay', e); }
+          }
+          else if (id === 'setBaselineBtn') {
+            try{ const baselineInput = document.getElementById('baselineDaysInput'); const days = parseInt(baselineInput.value || '0', 10) || 0; const clk = Storage.setClockBaselineDays(days); Storage.addNotification('time', `Baseline set: last active ${days} day(s) ago`); window.dispatchEvent(new CustomEvent('lvl:notifs:update')); }catch(e){ console.error('delegated setBaseline', e); }
+          }
+          else if (id === 'resetProgressBtn') {
+            try{ if (confirm('Reset all XP and progress? This cannot be undone.')) Storage.reset(); }catch(e){}
+          }
+          else if (id === 'saveDisplayNameBtn') {
+            try{ const displayInput = document.getElementById('displayNameInput'); const val = (displayInput && displayInput.value || '').trim(); const u = Storage.load(); u.name = val; Storage.save(u); const nameEl = document.querySelector('[data-user-name]'); if (nameEl) nameEl.textContent = val || ''; const initial = document.getElementById('userInitial'); if (initial) initial.textContent = (val && val.length>0) ? val.charAt(0).toUpperCase() : '?'; if (window.AppUtils && window.AppUtils.showToast) window.AppUtils.showToast('Display name saved'); }catch(e){ if (window.AppUtils && window.AppUtils.showToast) window.AppUtils.showToast('Unable to save name'); }
+          }
+        }catch(e){ console.error('settings delegated handler error', e); }
+      }, true);
+    }
+  }catch(e){}
 })();

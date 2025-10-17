@@ -115,5 +115,7 @@
     }catch(e){ console.error('NotifsUI.wire error', e); }
   }
 
+  // Notifs debug overlay removed for production.
+
   window.NotifsUI = { renderNotificationsList, renderDashboardDeltasFromLatestNotif, updateNotifCount, wire };
 })();
