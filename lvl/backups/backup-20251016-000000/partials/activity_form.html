@@ -7,13 +7,13 @@
     <form id="activityForm" class="space-y-4">
       <!-- Activity Selection -->
       <div>
-        <label class="block text-sm text-gray-300 mb-1">Select Activity</label>
+        <label for="activitySelect" class="block text-sm text-gray-300 mb-1">Select Activity</label>
         <select id="activitySelect" class="w-full bg-gray-800 text-gray-100 p-2 rounded-lg text-sm"></select>
       </div>
 
       <!-- Time Selection -->
       <div>
-        <label class="block text-sm text-gray-300 mb-1">Time Spent</label>
+        <label for="timeSelect" class="block text-sm text-gray-300 mb-1">Time Spent</label>
         <select id="timeSelect" class="w-full bg-gray-800 text-gray-100 p-2 rounded-lg text-sm">
           <option value="5">5 min</option>
           <option value="10">10 min</option>
@@ -22,6 +22,12 @@
           <option value="45">45 min</option>
           <option value="60">60 min</option>
         </select>
+      </div>
+
+      <!-- Optional details / notes -->
+      <div>
+        <label for="activityDetails" class="block text-sm text-gray-300 mb-1">Details (optional)</label>
+        <textarea id="activityDetails" rows="3" class="w-full bg-gray-800 text-gray-100 p-2 rounded-lg text-sm" placeholder="Add optional notes about this session (what you worked on, feelings, links, etc.)"></textarea>
       </div>
 
       <!-- XP Preview -->

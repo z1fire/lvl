@@ -1,17 +1,11 @@
 <section class="space-y-4">
   <h2 class="text-lg font-semibold text-green-400">📝 Reflections</h2>
-  <p class="text-gray-400">Write down your thoughts and insights for today.</p>
+  <p class="text-gray-400">Quick reflections are now available from the dashboard via the <strong>Reflect</strong> button. This page is a placeholder.</p>
 
-  <div id="reflectionForm" class="space-y-3">
-    <textarea id="reflectionText" rows="4" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-3 text-gray-100" placeholder="What did you learn or notice today?"></textarea>
-    <input id="reflectionTags" type="text" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-gray-300" placeholder="tags (comma-separated)" />
-    <div class="flex items-center justify-between">
-      <button id="addReflectionBtn" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg">Add Reflection</button>
-      <small class="text-xs text-gray-500">Your reflections are stored locally.</small>
+  <div class="bg-gray-900 p-4 rounded-2xl shadow-md">
+    <p class="text-gray-300">If you'd like to review saved reflections, they'll still appear below when present. Use the <strong>Reflect</strong> action on the dashboard to add a new one quickly.</p>
+    <div id="reflectionsList" class="space-y-3 mt-3">
+      <!-- reflections will still render here when present -->
     </div>
-  </div>
-
-  <div id="reflectionsList" class="space-y-3">
-    <!-- populated by main.js -->
   </div>
 </section>

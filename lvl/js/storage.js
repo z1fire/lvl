@@ -384,3 +384,28 @@ Storage.removeReflection = function(id){
   this._writeReflections(filtered);
   return true;
 };
+
+// Activity history helpers (safe, backward-compatible)
+Storage.HISTORY_KEY = 'lvl_activity_history_v1';
+Storage._readHistory = function(){ try { return JSON.parse(localStorage.getItem(this.HISTORY_KEY) || '[]'); } catch(e) { return []; } };
+Storage._writeHistory = function(list){ try { localStorage.setItem(this.HISTORY_KEY, JSON.stringify(list)); } catch(e) {} };
+
+Storage.getActivityHistory = function(){
+  const list = this._readHistory();
+  // most recent first
+  return Array.isArray(list) ? list.slice().sort((a,b) => (b.ts||0) - (a.ts||0)) : [];
+};
+
+Storage.addActivityHistory = function(entry){
+  try {
+    const list = this._readHistory();
+    const item = Object.assign({ id: 'h_' + Date.now() + '_' + Math.floor(Math.random()*1000), ts: Date.now() }, entry || {});
+    list.push(item);
+    this._writeHistory(list);
+    return item;
+  } catch (e) { return null; }
+};
+
+Storage.clearActivityHistory = function(){
+  try { localStorage.removeItem(this.HISTORY_KEY); return true; } catch(e) { return false; }
+};
