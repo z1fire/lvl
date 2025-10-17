@@ -75,6 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById('leaderboardList')) {
       try { if (window.Leaderboard && typeof window.Leaderboard.wire === 'function') window.Leaderboard.wire(); } catch(e){}
     }
+    // Wire settings partial when present
+    if (document.getElementById('settingsPage') || document.getElementById('settingsContainer')) {
+      try { if (window.SettingsUI && typeof window.SettingsUI.wire === 'function') window.SettingsUI.wire(); } catch(e){}
+    }
     // update notification badge when content changes
     try { if (typeof updateNotifCount === 'function') updateNotifCount(); } catch(e){}
     // If notifications partial was loaded, populate its list

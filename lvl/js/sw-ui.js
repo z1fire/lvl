@@ -14,6 +14,8 @@
   const AUTO_APPLY_SECONDS = isMobile ? 3 : 6;
 
       function createUpdateBanner(){
+        // don't spam the banner repeatedly in the same session
+        try{ const shown = sessionStorage.getItem('lvl_update_banner_shown'); if (shown) return; sessionStorage.setItem('lvl_update_banner_shown', '1'); }catch(e){}
         if (document.getElementById('updateBanner')) return;
         const banner = document.createElement('div');
         banner.id = 'updateBanner';
