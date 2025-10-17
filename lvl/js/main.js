@@ -851,9 +851,15 @@ function loadActivities() {
       try {
         // ignore if originated from star button
         if (e.target && e.target.closest && e.target.closest('button[data-activity-id]')) return;
-        // Only act for primary pointers/touches
+        // For pointer events: act when pointerup and not a mouse (i.e., touch or pen)
         if (e.type === 'pointerup' && e.pointerType && e.pointerType !== 'mouse') {
           toggleFavorite(act.id);
+          return;
+        }
+        // For touch events fallback (older browsers), act on touchend
+        if (e.type === 'touchend') {
+          toggleFavorite(act.id);
+          return;
         }
       } catch (err) { /* ignore */ }
     };
