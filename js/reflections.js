@@ -64,6 +64,8 @@
         if (!txt) { if (window.showToast) showToast('Reflection cannot be blank'); return; }
         const tags = (tagsIn.value || '').split(',').map(s=>s.trim()).filter(Boolean);
         if (window.Storage && typeof Storage.addReflection === 'function') Storage.addReflection(txt, tags);
+        // small XP award for reflecting (approx 15 minutes of activity)
+        try{ awardReflectionXP(); }catch(e){}
         textIn.value = ''; tagsIn.value = '';
         render(); if (window.showToast) showToast('Reflection saved');
         const nav = document.querySelector(".nav-btn[data-page='reflections']"); if (nav) { nav.classList.add('bell-pulse'); setTimeout(()=>nav.classList.remove('bell-pulse'),800); }
@@ -124,6 +126,8 @@
         const t = (tags && tags.value || '').split(',').map(s=>s.trim()).filter(Boolean);
         try{ if (window.Storage && typeof Storage.addReflection === 'function') Storage.addReflection(text, t); }catch(e){ console.error('addReflection failed', e); }
         closeModal();
+        // small XP award for reflecting (approx 15 minutes of activity)
+        try{ awardReflectionXP(); }catch(e){}
         // update reflections list if visible
         try{ if (document.getElementById('reflectionsList') && window.Reflections && typeof window.Reflections.render === 'function') window.Reflections.render(); }catch(e){}
         if (window.showToast) showToast('Reflection saved');
@@ -136,6 +140,22 @@
       modal.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeModal(); });
 
     }catch(e){ console.error('showReflectionModal', e); }
+  }
+
+  // Award a small XP bonus for writing a reflection: split between discipline and mindfulness
+  function awardReflectionXP() {
+    try{
+      // approximate 15 minutes worth of XP; Storage.addWeightedXP uses minutes->xp heuristics elsewhere
+      const minutes = 15;
+      // fallback simple mapping: ~Math.round(minutes * 1.6) => 24
+      const baseXP = Math.round(minutes * 1.6);
+      const half = Math.max(1, Math.round(baseXP / 2));
+      if (window.Storage && typeof Storage.addXP === 'function') {
+        Storage.addXP('discipline', half);
+        Storage.addXP('mindfulness', baseXP - half);
+      }
+      try{ if (window.showToast) showToast('+ a little XP for reflecting'); }catch(e){}
+    }catch(e){ console.error('awardReflectionXP error', e); }
   }
 
   window.Reflections = { render, wireForm, showModal };
