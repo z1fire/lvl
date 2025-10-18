@@ -30,8 +30,25 @@
       try{ const initial = document.getElementById('userInitial'); if (initial) initial.textContent = (user.name && user.name.length>0) ? user.name.charAt(0).toUpperCase() : '?'; }catch(e){}
 
       try{ const totalEl = document.querySelector('[data-total-xp]'); if (totalEl) totalEl.textContent = `${Number(user.totalXP||0).toLocaleString()} XP`; }catch(e){}
-      try{ const lvEl = document.querySelector('[data-overall-level]'); if (lvEl) lvEl.textContent = `Overall Lv ${Number(user.overallLevel||0)}`; }catch(e){}
-      try{ const progBar = document.getElementById('overallProgressBar'); if (progBar) animateXPBar(progBar, Number(user.overallProgress||0)); }catch(e){}
+      try{
+        const lvEl = document.querySelector('[data-overall-level]');
+        if (lvEl) {
+          // compute overall progress from totalXP to ensure persistence
+          if (window.Storage && typeof Storage.computeOverallLevel === 'function'){
+            const info = Storage.computeOverallLevel(user.totalXP, { baseXP: 1000, growth: 0.05 });
+            lvEl.textContent = `Overall Lv ${info.level} — ${info.xpIntoLevel.toLocaleString()} / ${info.xpForNextLevel.toLocaleString()} XP`;
+            const progBar = document.getElementById('overallProgressBar');
+            if (progBar) {
+              const pct = Math.min(100, Math.round((info.xpIntoLevel / info.xpForNextLevel) * 100));
+              // remove any width utility classes and set inline width so it persists
+              progBar.classList.remove('w-0');
+              progBar.style.width = pct + '%';
+            }
+          } else {
+            lvEl.textContent = `Overall Lv ${Number(user.overallLevel||0)}`;
+          }
+        }
+      }catch(e){}
       try{ const streakEl = document.querySelector('[data-streak]'); if (streakEl) streakEl.textContent = `🔥 ${Number(user.streak||0)}-day streak`; }catch(e){}
 
       // attributes

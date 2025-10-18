@@ -40,20 +40,56 @@
 
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
 
-  <!-- Header -->
-  <header class="p-4 text-center border-b border-gray-800">
+  <!-- Header (moved profile to left; actions on right) -->
+  <header class="p-3 border-b border-gray-800">
     <div class="flex items-center justify-between max-w-3xl mx-auto">
-      <h1 class="text-xl font-semibold text-green-400">Level Up Life</h1>
+      <div class="flex items-center gap-3">
+        <!-- Profile trigger -->
+        <button id="profileBtn" class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center font-bold text-lg text-white shadow-md focus:outline-none" aria-controls="profileDrawer" aria-expanded="false" aria-label="Open profile menu">
+          <span id="userInitial">?</span>
+        </button>
+        <h1 class="text-lg font-semibold text-green-400">Level Up Life</h1>
+      </div>
+
       <div class="flex items-center gap-3">
         <div id="swVersion" class="text-xs text-gray-500 hidden" title="Service worker cache name"></div>
         <button id="swCheckNow" class="text-xs text-gray-400 hover:text-green-400" title="Check for updates">⟳</button>
         <button id="notifBell" class="text-gray-300 hover:text-green-400" hx-get="partials/notifications.html" hx-target="#app" hx-swap="innerHTML" aria-label="Notifications">
-        🔔 <span id="notifCount" class="ml-1 text-xs bg-red-600 text-white rounded-full px-1 hidden">0</span>
+          🔔 <span id="notifCount" class="ml-1 text-xs bg-red-600 text-white rounded-full px-1 hidden">0</span>
         </button>
         <button id="installPWA" class="text-gray-300 hover:text-green-400 hidden" aria-label="Install app">⬇️ Install</button>
       </div>
     </div>
   </header>
+
+  <!-- Profile Drawer (off-canvas) -->
+  <div id="profileDrawerBackdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+  <aside id="profileDrawer" tabindex="-1" class="fixed left-0 top-0 h-full w-80 bg-gray-900 shadow-2xl transform -translate-x-full transition-transform duration-300 z-50" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="p-4 flex items-center justify-between border-b border-gray-800">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center font-bold text-xl"> <span id="drawerInitial">?</span> </div>
+        <div>
+          <div id="drawerName" class="font-semibold">Your Name</div>
+          <div class="text-xs text-gray-400">@handle</div>
+        </div>
+      </div>
+      <button id="closeProfileDrawer" class="text-gray-400 hover:text-gray-200">✕</button>
+    </div>
+    <nav class="p-4 space-y-2">
+      <button hx-get="partials/dashboard.html" hx-target="#app" hx-swap="innerHTML" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">🏠 Dashboard</button>
+      <button hx-get="partials/activities.html" hx-target="#app" hx-swap="innerHTML" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">➕ Log Activity</button>
+      <button hx-get="partials/reflections.html" hx-target="#app" hx-swap="innerHTML" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">📝 Reflections</button>
+      <button hx-get="partials/milestones.html" hx-target="#app" hx-swap="innerHTML" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">🎯 Progress</button>
+      <button hx-get="partials/community.html" hx-target="#app" hx-swap="innerHTML" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">🌐 Community</button>
+      <hr class="border-gray-800 my-2" />
+      <button hx-get="partials/history.html" hx-target="#app" hx-swap="innerHTML" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">📜 History</button>
+      <button hx-get="partials/settings.html" hx-target="#app" hx-swap="innerHTML" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">⚙️ Settings</button>
+      <hr class="border-gray-800 my-2" />
+      <button id="exportDataBtn" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">⬇️ Export Data</button>
+      <button id="resetProgressDrawerBtn" class="w-full text-left text-red-400 px-3 py-2 rounded-lg hover:bg-red-600">🗑 Reset Progress</button>
+      <div class="text-xs text-gray-500 mt-4 px-3">v<span id="appVersion">1.0.0</span></div>
+    </nav>
+  </aside>
 
   <!-- Main Container -->
   <main id="app"
@@ -94,12 +130,7 @@
       🎯<br><span class="text-xs">Goals</span>
     </button>
 
-    <button class="nav-btn text-gray-400"
-            hx-get="partials/settings.html"
-            hx-target="#app"
-            hx-swap="innerHTML">
-      ⚙️<br><span class="text-xs">Settings</span>
-    </button>
+    <!-- Settings moved into profile drawer -->
   </nav>
 
 </body>
