@@ -67,7 +67,10 @@
   <aside id="profileDrawer" tabindex="-1" class="fixed left-0 top-0 h-full w-80 bg-gray-900 shadow-2xl transform -translate-x-full transition-transform duration-300 z-50" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="p-4 flex items-center justify-between border-b border-gray-800">
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center font-bold text-xl"> <span id="drawerInitial">?</span> </div>
+        <div id="drawerAvatar" class="w-12 h-12 rounded-full bg-green-600 overflow-hidden flex items-center justify-center font-bold text-xl">
+          <img id="drawerAvatarImg" src="" alt="Profile" class="w-full h-full object-cover hidden" />
+          <span id="drawerInitial">?</span>
+        </div>
         <div>
           <div id="drawerName" class="font-semibold">Your Name</div>
           <div class="text-xs text-gray-400">@handle</div>
@@ -75,6 +78,7 @@
       </div>
       <button id="closeProfileDrawer" class="text-gray-400 hover:text-gray-200">✕</button>
     </div>
+    
     <nav class="p-4 space-y-2">
       <button hx-get="partials/dashboard.html" hx-target="#app" hx-swap="innerHTML" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">🏠 Dashboard</button>
       <button hx-get="partials/activities.html" hx-target="#app" hx-swap="innerHTML" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800">➕ Log Activity</button>

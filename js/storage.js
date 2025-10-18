@@ -6,6 +6,8 @@ const Storage = {
   _defaultUser() {
     return {
   name: "",
+      // data URL (base64) for profile picture, or null
+      profileImage: null,
       level: 1,
       totalXP: 0,
       streak: 1,
@@ -36,6 +38,7 @@ const Storage = {
 
       // ensure top-level defaults
       if (user.name === undefined) user.name = defaults.name;
+  if (user.profileImage === undefined) user.profileImage = defaults.profileImage;
       if (user.level === undefined) user.level = defaults.level;
       if (user.totalXP === undefined) user.totalXP = defaults.totalXP;
       if (user.streak === undefined) user.streak = defaults.streak;
@@ -61,6 +64,20 @@ const Storage = {
     // no saved user
     this.save(defaults);
     return defaults;
+  },
+
+  // profile image helpers (data URL)
+  setProfileImage(dataUrl) {
+    try {
+      const u = this.load();
+      u.profileImage = dataUrl || null;
+      this.save(u);
+      return true;
+    } catch (e) { return false; }
+  },
+
+  clearProfileImage() {
+    try { const u = this.load(); u.profileImage = null; this.save(u); return true; } catch(e) { return false; }
   },
 
   save(data) {
