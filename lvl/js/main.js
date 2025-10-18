@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const navButtons = document.querySelectorAll(".nav-btn");
   let currentPage = "dashboard";
-  const pageOrder = ["dashboard", "activities", "reflections", "milestones", "settings"];
+  const pageOrder = ["dashboard", "activities", "reflections", "milestones"];
 
   navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -43,6 +43,14 @@ document.addEventListener("DOMContentLoaded", () => {
       currentPage = page;
       navButtons.forEach(b => b.classList.replace("text-green-400", "text-gray-400"));
       btn.classList.replace("text-gray-400", "text-green-400");
+
+      // If user clicks Home while already on Dashboard, ensure dashboard visuals refresh.
+      try{
+        if (page === 'dashboard' && window.Dashboard && typeof window.Dashboard.loadDashboardData === 'function') {
+          // schedule after any potential HTMX swap to avoid racing with incoming HTML
+          setTimeout(() => { try{ window.Dashboard.loadDashboardData(); }catch(e){} }, 80);
+        }
+      }catch(e){}
     });
   });
 
@@ -134,6 +142,55 @@ document.body.addEventListener('htmx:afterSwap', () => {
   // Header update check button
   try{
     const swCheck = document.getElementById('swCheckNow'); if (swCheck) swCheck.addEventListener('click', async ()=>{ try{ if (window.SWUI && typeof window.SWUI.checkForUpdates === 'function') await window.SWUI.checkForUpdates(); }catch(e){} });
+  }catch(e){}
+
+  // Profile drawer wiring: open/close, backdrop, sync initial/name
+  try{
+    const profileBtn = document.getElementById('profileBtn');
+    const profileDrawer = document.getElementById('profileDrawer');
+    const profileBackdrop = document.getElementById('profileDrawerBackdrop');
+    const closeDrawer = document.getElementById('closeProfileDrawer');
+    const drawerInitial = document.getElementById('drawerInitial');
+    const drawerName = document.getElementById('drawerName');
+
+    function openDrawer(){
+      if (!profileDrawer) return;
+      profileDrawer.classList.remove('-translate-x-full');
+      profileDrawer.setAttribute('aria-hidden','false');
+      profileBackdrop.classList.remove('hidden');
+      profileBtn.setAttribute('aria-expanded','true');
+      // copy initial/name
+      try{ const nameEl = document.querySelector('[data-user-name]'); const initialEl = document.getElementById('userInitial'); if (drawerInitial && initialEl) drawerInitial.textContent = initialEl.textContent || '?'; if (drawerName && nameEl) drawerName.textContent = nameEl.textContent || 'Your Name'; }catch(e){}
+      // trap focus
+      try{ profileDrawer.focus(); }catch(e){}
+    }
+
+    function closeDrawerFn(){
+      if (!profileDrawer) return;
+      profileDrawer.classList.add('-translate-x-full');
+      profileDrawer.setAttribute('aria-hidden','true');
+      profileBackdrop.classList.add('hidden');
+      profileBtn.setAttribute('aria-expanded','false');
+      try{ profileBtn.focus(); }catch(e){}
+    }
+
+    if (profileBtn) profileBtn.addEventListener('click', (e)=>{ e.preventDefault(); openDrawer(); });
+    if (closeDrawer) closeDrawer.addEventListener('click', (e)=>{ e.preventDefault(); closeDrawerFn(); });
+    if (profileBackdrop) profileBackdrop.addEventListener('click', (e)=>{ closeDrawerFn(); });
+    // close on Escape
+    document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') { try{ if (profileDrawer && !profileDrawer.classList.contains('translate-x-full')) closeDrawerFn(); }catch(err){} } });
+
+    // HTMX links inside drawer should close it after navigation
+    document.body.addEventListener('click', (e)=>{
+      try{
+        const a = e.target.closest && e.target.closest('[hx-get]');
+        if (!a) return;
+        if (profileDrawer && profileDrawer.contains(a)) {
+          // let HTMX handle swap, then close drawer
+          setTimeout(()=> closeDrawerFn(), 250);
+        }
+      }catch(e){}
+    }, true);
   }catch(e){}
 
   // Delegated reset handler: catch clicks on reset button even if partial content reloaded

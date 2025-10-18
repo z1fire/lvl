@@ -1,0 +1,33 @@
+<section class="space-y-4">
+  <h2 class="text-lg font-semibold text-green-400">🌐 Community</h2>
+  <p class="text-gray-400">Community features are coming — leaderboards, public reflections, and a feed.</p>
+
+  <div class="mt-4 bg-gray-900 p-4 rounded-lg border border-gray-800">
+    <div class="flex gap-2 mb-3">
+      <button id="communityTabLeaderboard" class="px-3 py-1 bg-gray-800 rounded text-sm text-gray-200">Leaderboard</button>
+      <button id="communityTabFeed" class="px-3 py-1 bg-transparent rounded text-sm text-gray-400">Feed</button>
+    </div>
+
+    <div id="communityContent">
+      <div id="leaderboardPlaceholder" class="text-sm text-gray-300">
+        Leaderboard will show top players by total XP. (Placeholder)</div>
+      <div id="feedPlaceholder" class="hidden text-sm text-gray-300 mt-2">
+        Public feed of shared reflections will appear here. (Placeholder)</div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('communityTabLeaderboard').addEventListener('click', ()=>{
+      document.getElementById('leaderboardPlaceholder').classList.remove('hidden');
+      document.getElementById('feedPlaceholder').classList.add('hidden');
+      document.getElementById('communityTabLeaderboard').classList.add('bg-gray-800');
+      document.getElementById('communityTabFeed').classList.remove('bg-gray-800');
+    });
+    document.getElementById('communityTabFeed').addEventListener('click', ()=>{
+      document.getElementById('leaderboardPlaceholder').classList.add('hidden');
+      document.getElementById('feedPlaceholder').classList.remove('hidden');
+      document.getElementById('communityTabFeed').classList.add('bg-gray-800');
+      document.getElementById('communityTabLeaderboard').classList.remove('bg-gray-800');
+    });
+  </script>
+</section>
