@@ -153,10 +153,13 @@
       if (window.Storage && typeof Storage.addXP === 'function') {
         Storage.addXP('discipline', half);
         Storage.addXP('mindfulness', baseXP - half);
+        // update dashboard UI if present
+        try{ if (typeof loadDashboardData === 'function') loadDashboardData(); else if (window.loadDashboardData) window.loadDashboardData(); }catch(e){}
+        try{ if (window.showToast) showToast('+' + baseXP + ' XP (+' + half + ' discipline, +' + (baseXP-half) + ' mindfulness)'); }catch(e){}
       }
-      try{ if (window.showToast) showToast('+ a little XP for reflecting'); }catch(e){}
     }catch(e){ console.error('awardReflectionXP error', e); }
   }
 
   window.Reflections = { render, wireForm, showModal };
 })();
+
