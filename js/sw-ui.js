@@ -118,6 +118,8 @@
             const last = localStorage.getItem('lvl_sw_version') || null;
             if (remote && remote !== last) {
               localStorage.setItem('lvl_sw_version', remote);
+              // set a timestamp so the app can append cache-busting params to HTMX requests
+              try{ const ts = String(Date.now()); window.__LVL_update_ts = ts; sessionStorage.setItem('lvl_update_ts', ts); }catch(e){}
               // ask SW to check for updates and show banner
               try{ if (swRegistration && swRegistration.active && swRegistration.active.postMessage) swRegistration.active.postMessage({type:'CHECK_FOR_UPDATE'}); }catch(e){}
               try{ createUpdateBanner(); }catch(e){}
@@ -144,6 +146,21 @@
         if (!userAcceptedUpdate && !isMobile) return;
         refreshing = true; try{ removeUpdateBanner(); }catch(e){} window.location.reload();
       });
+
+      // when SW signals activation or update, set update timestamp for HTMX cache-busting
+      try{
+        navigator.serviceWorker.addEventListener('message', (ev)=>{
+          try{
+            const data = ev.data || {};
+            if (!data) return;
+            if (data.type === 'SW_ACTIVATED' || data.type === 'SW_UPDATED') {
+              const ts = String(Date.now());
+              window.__LVL_update_ts = ts;
+              try{ sessionStorage.setItem('lvl_update_ts', ts);}catch(e){}
+            }
+          }catch(e){}
+        });
+      }catch(e){}
 
       function removeUpdateBanner(){
         try{

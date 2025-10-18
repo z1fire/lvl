@@ -1,6 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Level Up Life started!");
 
+  // restore update timestamp (set by SW UI) so HTMX cache-busting can run immediately
+  try {
+    const uts = sessionStorage.getItem('lvl_update_ts');
+    if (uts) window.__LVL_update_ts = String(uts);
+  } catch (e) {}
+
   // PWA install prompt handling
   let deferredPrompt = null;
   const installBtn = document.getElementById('installPWA');
@@ -54,6 +60,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (e) { /* ignore */ }
   }, true);
+
+  // HTMX: when an update timestamp is present, append it to all GET requests to bypass caches
+  document.body.addEventListener('htmx:configRequest', (evt) => {
+    try {
+      const ts = window.__LVL_update_ts;
+      if (!ts) return;
+      const cfg = evt.detail || {};
+      const verb = (cfg.verb || 'GET').toUpperCase();
+      if (verb !== 'GET') return;
+      const path = cfg.path || cfg.pathInfo || null;
+      if (!path) return;
+      if (path.indexOf('?') === -1) cfg.path = path + '?_ts=' + ts;
+      else cfg.path = path + '&_ts=' + ts;
+    } catch (e) {
+      console.warn('htmx cache-bust hook error', e);
+    }
+  });
 
   document.body.addEventListener("htmx:afterSwap", () => {
     const app = document.getElementById("app");
