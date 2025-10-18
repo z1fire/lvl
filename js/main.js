@@ -109,7 +109,8 @@ document.addEventListener("DOMContentLoaded", () => {
       renderNotificationsList();
     }
     // If milestones partial loaded, delegate wiring to Milestones module
-    if (document.getElementById('milestoneNotify')) {
+    // The milestones partial may no longer include the notification block; check for the chart container too
+    if (document.getElementById('milestoneNotify') || document.getElementById('attributesChart')) {
       try { if (window.Milestones && typeof window.Milestones.wire === 'function') window.Milestones.wire(); } catch(e){}
     }
   });
