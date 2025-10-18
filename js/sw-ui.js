@@ -96,7 +96,22 @@
         });
         // show a manual check button when debugging is enabled
         try{ showManualUpdateButton(); }catch(e){}
-  navigator.serviceWorker.addEventListener('message', (ev)=>{ try{ const data = ev.data||{}; if (data && data.type === 'SW_UPDATED') { createUpdateBanner(); } if (data && (data.type === 'SW_ACTIVATED' || data.type === 'SW_UPDATED')) { _toast('Update ready'); removeUpdateBanner(); } }catch(e){} });
+  navigator.serviceWorker.addEventListener('message', (ev)=>{
+    try{
+      const data = ev.data||{};
+      if (data && data.type === 'SW_UPDATED') {
+        createUpdateBanner();
+      }
+      // Only show the 'Update ready' toast when the update was explicitly applied
+      if (data && (data.type === 'SW_ACTIVATED' || data.type === 'SW_UPDATED')) {
+        const applied = (data && data.applied) || userAcceptedUpdate || (isMobile && userAcceptedUpdate);
+        if (applied) {
+          _toast('Update ready');
+          removeUpdateBanner();
+        }
+      }
+    }catch(e){}
+  });
   }).catch(err=>console.warn('SW register failed', err));
 
       // expose programmatic check hook
@@ -120,9 +135,10 @@
               localStorage.setItem('lvl_sw_version', remote);
               // set a timestamp so the app can append cache-busting params to HTMX requests
               try{ const ts = String(Date.now()); window.__LVL_update_ts = ts; sessionStorage.setItem('lvl_update_ts', ts); }catch(e){}
-              // ask SW to check for updates and show banner
+              // ask SW to check for updates
               try{ if (swRegistration && swRegistration.active && swRegistration.active.postMessage) swRegistration.active.postMessage({type:'CHECK_FOR_UPDATE'}); }catch(e){}
-              try{ createUpdateBanner(); }catch(e){}
+              // only show banner if there's already a waiting/installed worker to activate
+              try{ if (swRegistration && (swRegistration.waiting || (swRegistration.installing && swRegistration.installing.state === 'installed'))) createUpdateBanner(); }catch(e){}
               // For mobile devices, be more aggressive: auto-accept and request skipWaiting so users get the new UI without manual cache clearing
               try{
                 if (isMobile && swRegistration) {
