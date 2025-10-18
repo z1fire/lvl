@@ -107,6 +107,11 @@ document.body.addEventListener('htmx:afterSwap', () => {
   // Service worker UI delegated to SWUI
   try{ if (window.SWUI && typeof window.SWUI.init === 'function') window.SWUI.init(); if (window.SWUI && typeof window.SWUI.devButtonWire === 'function') window.SWUI.devButtonWire(); }catch(e){}
 
+  // Header update check button
+  try{
+    const swCheck = document.getElementById('swCheckNow'); if (swCheck) swCheck.addEventListener('click', async ()=>{ try{ if (window.SWUI && typeof window.SWUI.checkForUpdates === 'function') await window.SWUI.checkForUpdates(); }catch(e){} });
+  }catch(e){}
+
   // Delegated reset handler: catch clicks on reset button even if partial content reloaded
   document.body.addEventListener('click', (e) => {
     const btn = e.target.closest && e.target.closest('#resetProgressBtn');

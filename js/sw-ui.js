@@ -99,6 +99,14 @@
   navigator.serviceWorker.addEventListener('message', (ev)=>{ try{ const data = ev.data||{}; if (data && data.type === 'SW_UPDATED') { createUpdateBanner(); } if (data && (data.type === 'SW_ACTIVATED' || data.type === 'SW_UPDATED')) { _toast('Update ready'); removeUpdateBanner(); } }catch(e){} });
   }).catch(err=>console.warn('SW register failed', err));
 
+      // expose programmatic check hook
+      window.SWUI = window.SWUI || {};
+      window.SWUI.checkForUpdates = async function(){
+        try{ if (swRegistration && swRegistration.update) await swRegistration.update(); }catch(e){}
+        try{ if (swRegistration && swRegistration.active && swRegistration.active.postMessage) swRegistration.active.postMessage({type:'CHECK_FOR_UPDATE'}); }catch(e){}
+        try{ const res = await fetch('sw-version.json', {cache:'no-store'}); if (res && res.ok){ const data = await res.json(); const remote = data && data.cache; const local = localStorage.getItem('lvl_sw_version') || '(none)'; _toast('remote: ' + remote + ' local: ' + local); } }catch(e){}
+      };
+
       // quick deployed-version check: poll sw-version.json (no-store) and compare to last seen
       try{
         async function checkRemoteVersion(){
