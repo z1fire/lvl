@@ -10,9 +10,32 @@ const ASSETS = [
   './js/main.js',
   './js/storage.js',
   './js/notifications.js',
+  './js/ui-utils.js',
+  './js/name-ui.js',
+  './js/activities.js',
+  './js/notifs-ui.js',
+  './js/activity-form.js',
+  './js/reflections.js',
+  './js/milestones.js',
+  './js/history.js',
+  './js/leaderboard.js',
+  './js/dashboard.js',
+  './js/sw-ui.js',
   './data/activities.json',
   './partials/reflections.html',
-  './manifest.json'
+  './partials/milestones.html',
+  './partials/dashboard.html',
+  './partials/activity_form.html',
+  './partials/activities.html',
+  './partials/history.html',
+  './partials/leaderboard.html',
+  './partials/notifications.html',
+  './partials/settings.html',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon.svg',
+  './sw-version.json'
 ];
 
 self.addEventListener('install', (event) => {
