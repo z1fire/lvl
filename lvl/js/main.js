@@ -109,6 +109,24 @@ document.addEventListener("DOMContentLoaded", () => {
     // Wire settings partial when present
     if (document.getElementById('settingsPage') || document.getElementById('settingsContainer')) {
       try { if (window.SettingsUI && typeof window.SettingsUI.wire === 'function') window.SettingsUI.wire(); } catch(e){}
+      // wire profile image controls inside settings
+      try{
+        const imgInput = document.getElementById('settingsProfileImageInput');
+        const removeBtn = document.getElementById('settingsRemoveProfileImageBtn');
+        if (imgInput && !imgInput.dataset.wired) {
+          imgInput.addEventListener('change', (ev) => {
+            const f = ev.target.files && ev.target.files[0]; if (!f) return;
+            const reader = new FileReader();
+            reader.onload = function(rEv){ try{ Storage.setProfileImage(String(rEv.target.result || '')); refreshAvatarUI(); showToast('Profile image saved'); }catch(e){ showToast('Unable to save image'); } };
+            reader.readAsDataURL(f);
+          });
+          imgInput.dataset.wired = 'true';
+        }
+        if (removeBtn && !removeBtn.dataset.wired) {
+          removeBtn.addEventListener('click', ()=>{ if (!confirm('Remove profile picture?')) return; Storage.clearProfileImage(); refreshAvatarUI(); showToast('Profile image removed'); });
+          removeBtn.dataset.wired = 'true';
+        }
+      }catch(e){}
     }
     // update notification badge when content changes
     try { if (typeof updateNotifCount === 'function') updateNotifCount(); } catch(e){}
@@ -192,6 +210,56 @@ document.body.addEventListener('htmx:afterSwap', () => {
       }catch(e){}
     }, true);
   }catch(e){}
+
+    // Expose a small helper to refresh avatar UI across header/drawer/settings
+    function refreshAvatarUI() {
+      try{
+        const u = Storage.load();
+        const headerInitial = document.getElementById('userInitial');
+        if (u && u.profileImage) {
+          // header
+          if (headerInitial && headerInitial.parentElement) {
+            let img = headerInitial.parentElement.querySelector('img');
+            if (!img) { img = document.createElement('img'); img.className = 'w-full h-full object-cover rounded-full'; headerInitial.parentElement.appendChild(img); }
+            img.src = u.profileImage;
+            headerInitial.classList.add('hidden');
+          }
+        } else {
+          if (headerInitial && headerInitial.parentElement) {
+            const img = headerInitial.parentElement.querySelector('img'); if (img) img.remove(); headerInitial.classList.remove('hidden');
+          }
+        }
+
+        // drawer preview
+        const drawerAvatarImg = document.getElementById('drawerAvatarImg');
+        const drawerInitial = document.getElementById('drawerInitial');
+        const removeBtn = document.getElementById('removeProfileImageBtn');
+        if (u && u.profileImage) {
+          if (drawerAvatarImg) { drawerAvatarImg.src = u.profileImage; drawerAvatarImg.classList.remove('hidden'); }
+          if (drawerInitial) drawerInitial.classList.add('hidden');
+          if (removeBtn) removeBtn.classList.remove('hidden');
+        } else {
+          if (drawerAvatarImg) { drawerAvatarImg.src = ''; drawerAvatarImg.classList.add('hidden'); }
+          if (drawerInitial) drawerInitial.classList.remove('hidden');
+          if (removeBtn) removeBtn.classList.add('hidden');
+        }
+
+        // settings preview
+        const settingsAvatarImg = document.getElementById('settingsAvatarImg');
+        const settingsAvatarInitial = document.getElementById('settingsAvatarInitial');
+        const settingsRemoveBtn = document.getElementById('settingsRemoveProfileImageBtn');
+        const settingsPreview = document.getElementById('settingsAvatarPreview');
+        if (u && u.profileImage) {
+          if (settingsAvatarImg) { settingsAvatarImg.src = u.profileImage; settingsAvatarImg.classList.remove('hidden'); }
+          if (settingsAvatarInitial) settingsAvatarInitial.classList.add('hidden');
+          if (settingsRemoveBtn) settingsRemoveBtn.classList.remove('hidden');
+        } else {
+          if (settingsAvatarImg) { settingsAvatarImg.src = ''; settingsAvatarImg.classList.add('hidden'); }
+          if (settingsAvatarInitial) settingsAvatarInitial.classList.remove('hidden');
+          if (settingsRemoveBtn) settingsRemoveBtn.classList.add('hidden');
+        }
+      }catch(e){ /* ignore */ }
+    }
 
   // Delegated reset handler: catch clicks on reset button even if partial content reloaded
   document.body.addEventListener('click', (e) => {
