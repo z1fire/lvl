@@ -273,12 +273,41 @@ document.addEventListener("keydown", (e) => {
 });
 
 // 🪄 Toast helper
-function showToast(msg) {
-  const toast = document.createElement("div");
-  toast.textContent = msg;
-  toast.className = "fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm animate-fadeInOut z-50";
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 2500);
+// 🪄 Toast helper: stacked container to avoid overlapping toasts
+function _ensureToastContainer(){
+  let c = document.getElementById('toastContainer');
+  if (c) return c;
+  c = document.createElement('div');
+  c.id = 'toastContainer';
+  c.style.position = 'fixed';
+  c.style.right = '16px';
+  c.style.bottom = '16px';
+  c.style.display = 'flex';
+  c.style.flexDirection = 'column';
+  c.style.gap = '8px';
+  c.style.zIndex = 9999;
+  document.body.appendChild(c);
+  return c;
+}
+
+function showToast(msg, opts){
+  try{
+    const c = _ensureToastContainer();
+    const toast = document.createElement('div');
+    toast.textContent = msg;
+    toast.className = 'bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm';
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 200ms ease, transform 200ms ease';
+    toast.style.transform = 'translateY(8px)';
+    c.appendChild(toast);
+    // animate in
+    requestAnimationFrame(()=>{ toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; });
+    const life = (opts && opts.duration) ? Number(opts.duration) : 2500;
+    setTimeout(()=>{
+      toast.style.opacity = '0'; toast.style.transform = 'translateY(8px)';
+      setTimeout(()=>{ try{ toast.remove(); }catch(e){} }, 250);
+    }, life);
+  }catch(e){ console.error('showToast error', e); }
 }
 
   // ARIA live region for screen-reader announcements
