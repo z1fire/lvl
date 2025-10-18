@@ -4,15 +4,7 @@
     try{
       // Simulation controls removed from settings UI
 
-      // baseline setter
-      const baselineInput = document.getElementById('baselineDaysInput');
-      const setBaselineBtn = document.getElementById('setBaselineBtn');
-      if (setBaselineBtn && !setBaselineBtn.dataset.wired) {
-        setBaselineBtn.addEventListener('click', () => {
-          try{ const days = parseInt(baselineInput.value || '0', 10) || 0; const clk = Storage.setClockBaselineDays(days); Storage.addNotification('time', `Baseline set: last active ${days} day(s) ago`); window.dispatchEvent(new CustomEvent('lvl:notifs:update')); }catch(e){ console.error('set baseline error', e); }
-        });
-        setBaselineBtn.dataset.wired = 'true';
-      }
+      // baseline setting removed
 
       // Test notification removed from settings UI
 
