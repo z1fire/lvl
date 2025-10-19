@@ -54,6 +54,80 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // Helper: read File to DataURL
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result || ''));
+      fr.onerror = () => reject(new Error('Failed to read file'));
+      fr.readAsDataURL(file);
+    });
+  }
+
+  // Helper: get approximate byte size from data URL
+  function dataURLSizeBytes(dataUrl) {
+    // remove prefix like data:image/jpeg;base64,
+    const idx = dataUrl.indexOf(',');
+    if (idx === -1) return dataUrl.length;
+    const base64 = dataUrl.slice(idx + 1);
+    // Each base64 character encodes 6 bits => bytes = base64.length * 3/4
+    return Math.ceil((base64.length * 3) / 4);
+  }
+
+  // Resize image (via canvas) and try quality reductions to hit size target
+  async function readAndResizeImage(file, maxWidth = 512, maxKB = 300) {
+    if (!file || !file.type || !file.type.startsWith('image/')) throw 'Selected file is not an image';
+    const initialDataUrl = await readFileAsDataURL(file);
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error('Invalid image file'));
+      i.src = initialDataUrl;
+    });
+
+    // compute target dimensions
+    let targetWidth = img.width;
+    let targetHeight = img.height;
+    if (img.width > maxWidth) {
+      const ratio = maxWidth / img.width;
+      targetWidth = Math.round(img.width * ratio);
+      targetHeight = Math.round(img.height * ratio);
+    }
+
+    // helper to render at given width/quality
+    function renderToDataUrl(width, height, quality) {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      return canvas.toDataURL('image/jpeg', quality);
+    }
+
+    // Try descending qualities, and if still too big, scale down and retry
+    const maxBytes = maxKB * 1024;
+    let width = targetWidth, height = targetHeight;
+    for (let scaleAttempts = 0; scaleAttempts < 6; scaleAttempts++) {
+      for (let q = 0.92; q >= 0.5; q -= 0.08) {
+        try {
+          const out = renderToDataUrl(width, height, q);
+          const size = dataURLSizeBytes(out);
+          if (size <= maxBytes) return out;
+          // if image already small (file bytes), and conversion made it bigger, keep original as fallback
+        } catch (e) { /* ignore and continue */ }
+      }
+      // reduce dimensions by 0.8 and retry
+      width = Math.max(64, Math.round(width * 0.8));
+      height = Math.max(64, Math.round(height * 0.8));
+    }
+
+    // final attempt: return a reasonable JPEG even if slightly larger
+    const fallback = renderToDataUrl(Math.max(64, width), Math.max(64, height), 0.5);
+    if (dataURLSizeBytes(fallback) <= maxBytes * 1.5) return fallback;
+    throw 'Image could not be compressed below ' + maxKB + 'KB';
+  }
+
   // Cache-busting for reflections partial: ensure we fetch latest partial from network
   document.body.addEventListener('click', (e) => {
     try {
@@ -114,11 +188,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const imgInput = document.getElementById('settingsProfileImageInput');
         const removeBtn = document.getElementById('settingsRemoveProfileImageBtn');
         if (imgInput && !imgInput.dataset.wired) {
-          imgInput.addEventListener('change', (ev) => {
+          imgInput.addEventListener('change', async (ev) => {
             const f = ev.target.files && ev.target.files[0]; if (!f) return;
-            const reader = new FileReader();
-            reader.onload = function(rEv){ try{ Storage.setProfileImage(String(rEv.target.result || '')); refreshAvatarUI(); showToast('Profile image saved'); }catch(e){ showToast('Unable to save image'); } };
-            reader.readAsDataURL(f);
+            try {
+              showToast('Processing image...');
+              const resized = await readAndResizeImage(f, 512, 300);
+              Storage.setProfileImage(String(resized || ''));
+              refreshAvatarUI();
+              showToast('Profile image saved');
+            } catch (err) {
+              console.warn('Image save/resize error', err);
+              showToast(typeof err === 'string' ? err : 'Unable to save image');
+            }
           });
           imgInput.dataset.wired = 'true';
         }
@@ -274,6 +355,8 @@ document.body.addEventListener('htmx:afterSwap', () => {
   }
   // wire reflect button on dashboard
   try { wireReflectButton(); } catch(e) {}
+  // Ensure avatar UI reflects persisted profileImage on load
+  try { refreshAvatarUI(); } catch(e) {}
   // expose SW version in header for debugging
   try {
     const swEl = document.getElementById('swVersion');
